@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(claude mcp list)",
+      "Bash(claude mcp add brave-search npx @modelcontextprotocol/server-brave-search --env BRAVE_API_KEY)",
+      "Bash(claude mcp remove brave-search)",
+      "Bash(claude mcp add brave-search npx @modelcontextprotocol/server-brave-search -e BRAVE_API_KEY)",
+      "WebFetch(domain:github.com)",
+      "Bash(claude mcp get brave-search)",
+      "Bash(node:*)",
+      "mcp__brave-search__brave_web_search",
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(claude mcp add brave-search npx @modelcontextprotocol/server-brave-search -e BRAVE_API_KEY)",
+      "Bash(flutter:*)",
+      "Bash(mkdir:*)",
+      "Bash(mkdir -p docs)",
+      "Bash(dart pub:*)"
+    ],
+    "deny": []
+  }
+}
