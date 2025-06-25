@@ -552,17 +552,17 @@
 **Description**: Cairo smart contracts for achievements, leaderboards, and kingdom state
 **Priority**: High | **Effort**: Large | **Dependencies**: GAME-001, SOCIAL-001
 **Acceptance Criteria**:
-- [ ] Achievement NFT contracts (Cairo 1.0+)
-- [ ] Leaderboard transparency contracts
-- [ ] Kingdom state persistence contracts
-- [ ] Educational progress verification contracts
-- [ ] Paymaster contracts for gasless transactions
+- [x] Achievement NFT contracts (Cairo 1.0+)
+- [x] Leaderboard transparency contracts
+- [x] Kingdom state persistence contracts
+- [x] Educational progress verification contracts
+- [x] Paymaster contracts for gasless transactions
 - [ ] Smart contract security audit completion
 - [ ] Gas optimization and efficiency testing
 - [ ] Contract upgrade mechanisms
 - [ ] Multi-signature governance setup
 - [ ] Integration testing with mobile app
-**Status**: Pending
+**Status**: Partially Completed
 
 #### BLOCKCHAIN-002: **2025-06-25** StarkNet Mobile Integration
 **Description**: StarkNet.dart SDK integration for mobile app

@@ -104,6 +104,11 @@ This project uses Model Context Protocol (MCP) servers to extend Claude Code cap
   - Requirements: Node.js, Brave Search API key (set as `BRAVE_API_KEY` environment variable)
   - Usage: Provides web search capabilities for research and documentation lookup
 
+- **Cairo Coder** (`cairo-coder`): StarkNet smart contract development assistance
+  - Command: `npx @kasarlabs/cairo-coder-mcp`
+  - Requirements: Node.js
+  - Usage: Provides Cairo language support, StarkNet contract templates, and blockchain development guidance
+
 #### MCP Server Management
 - **List servers**: `claude mcp list`
 - **Add server**: `claude mcp add <name> <command> [args...]`
@@ -119,6 +124,7 @@ This project uses Model Context Protocol (MCP) servers to extend Claude Code cap
 
 #### MCP Servers
 - Brave Search: For web search capabilities
+- Cairo Coder: For StarkNet smart contract development
 
 ### 🧠 AI Behavior Rules (ENFORCEMENT)
 

@@ -16,7 +16,19 @@
       "Bash(flutter:*)",
       "Bash(mkdir:*)",
       "Bash(mkdir -p docs)",
-      "Bash(dart pub:*)"
+      "Bash(dart pub:*)",
+      "Bash(source:*)",
+      "Bash(scarb:*)",
+      "Bash(snforge:*)",
+      "Bash(asdf plugin add:*)",
+      "Bash(asdf install:*)",
+      "Bash(asdf global:*)",
+      "Bash(asdf set:*)",
+      "Bash(sncast:*)",
+      "Bash(export PATH=\"$HOME/.asdf/shims:$PATH\")",
+      "Bash(starknet-devnet:*)",
+      "mcp__cairo-coder__assist_with_cairo",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
