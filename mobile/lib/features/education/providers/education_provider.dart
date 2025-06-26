@@ -1,5 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/exceptions/app_exceptions.dart';
+import '../../../core/services/error_handler_service.dart';
+
 part 'education_provider.g.dart';
 
 class EducationModule {
@@ -116,25 +119,73 @@ class EducationNotifier extends _$EducationNotifier {
   }
 
   void updateModuleProgress(String moduleId, double progress) {
-    final updatedProgress = Map<String, double>.from(state.moduleProgress);
-    updatedProgress[moduleId] = progress;
-    
-    state = state.copyWith(moduleProgress: updatedProgress);
-    
-    // Award XP for progress
-    if (progress >= 1.0) {
-      _awardXpForCompletion(moduleId);
-    }
+    ErrorHandlerService.safeExecute(
+      () {
+        // Validate inputs
+        if (progress < 0.0 || progress > 1.0) {
+          throw EducationException(
+            'Invalid progress value: $progress. Progress must be between 0.0 and 1.0',
+            code: 'INVALID_PROGRESS_VALUE',
+          );
+        }
+        
+        // Check if module exists
+        final moduleExists = state.modules.any((module) => module.id == moduleId);
+        if (!moduleExists) {
+          throw AppExceptions.moduleNotFound(moduleId);
+        }
+        
+        // Check if module is locked
+        final module = state.modules.firstWhere((m) => m.id == moduleId);
+        if (module.isLocked) {
+          throw EducationException(
+            'Cannot update progress for locked module: $moduleId',
+            code: 'MODULE_LOCKED',
+          );
+        }
+        
+        // Check if module is already completed
+        final currentProgress = state.moduleProgress[moduleId] ?? 0.0;
+        if (currentProgress >= 1.0 && progress >= 1.0) {
+          throw AppExceptions.moduleAlreadyCompleted(moduleId);
+        }
+        
+        final updatedProgress = Map<String, double>.from(state.moduleProgress);
+        updatedProgress[moduleId] = progress;
+        
+        state = state.copyWith(moduleProgress: updatedProgress);
+        
+        // Award XP for progress
+        if (progress >= 1.0 && currentProgress < 1.0) {
+          _awardXpForCompletion(moduleId);
+        }
+      },
+      fallbackValue: null,
+      context: 'EducationProvider.updateModuleProgress',
+    );
   }
 
   void _awardXpForCompletion(String moduleId) {
-    const xpPerModule = 50;
-    state = state.copyWith(
-      totalXpEarned: state.totalXpEarned + xpPerModule,
-    );
-    
-    // Check if any modules should be unlocked
-    _checkAndUnlockModules();
+    try {
+      const xpPerModule = 50;
+      final newTotalXp = state.totalXpEarned + xpPerModule;
+      
+      if (newTotalXp < 0) {
+        throw AppExceptions.invalidXPValue(newTotalXp);
+      }
+      
+      state = state.copyWith(
+        totalXpEarned: newTotalXp,
+      );
+      
+      // Check if any modules should be unlocked
+      _checkAndUnlockModules();
+    } catch (e) {
+      ErrorHandlerService.handleException(
+        e is Exception ? e : Exception('XP award failed: $e'),
+        context: 'EducationProvider._awardXpForCompletion',
+      );
+    }
   }
 
   void _checkAndUnlockModules() {
@@ -149,13 +200,34 @@ class EducationNotifier extends _$EducationNotifier {
   }
 
   void unlockModule(String moduleId) {
-    final updatedModules = state.modules.map((module) {
-      if (module.id == moduleId) {
-        return module.copyWith(isLocked: false);
-      }
-      return module;
-    }).toList();
-    
-    state = state.copyWith(modules: updatedModules);
+    ErrorHandlerService.safeExecute(
+      () {
+        // Check if module exists
+        final moduleExists = state.modules.any((module) => module.id == moduleId);
+        if (!moduleExists) {
+          throw AppExceptions.moduleNotFound(moduleId);
+        }
+        
+        // Check if module is already unlocked
+        final module = state.modules.firstWhere((m) => m.id == moduleId);
+        if (!module.isLocked) {
+          throw EducationException(
+            'Module $moduleId is already unlocked',
+            code: 'MODULE_ALREADY_UNLOCKED',
+          );
+        }
+        
+        final updatedModules = state.modules.map((module) {
+          if (module.id == moduleId) {
+            return module.copyWith(isLocked: false);
+          }
+          return module;
+        }).toList();
+        
+        state = state.copyWith(modules: updatedModules);
+      },
+      fallbackValue: null,
+      context: 'EducationProvider.unlockModule',
+    );
   }
 }

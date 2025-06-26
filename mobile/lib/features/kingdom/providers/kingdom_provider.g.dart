@@ -6,7 +6,7 @@ part of 'kingdom_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$kingdomNotifierHash() => r'69fec333674cdbf0917096fa15e9ff60600db710';
+String _$kingdomNotifierHash() => r'399be06f06d157fcd92655cdcb451ead26876231';
 
 /// See also [KingdomNotifier].
 @ProviderFor(KingdomNotifier)
