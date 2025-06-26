@@ -50,7 +50,6 @@ class AppTheme {
       filled: true,
       fillColor: surfaceWhite,
     ),
-    fontFamily: 'Roboto',
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -90,6 +89,5 @@ class AppTheme {
       ),
       filled: true,
     ),
-    fontFamily: 'Roboto',
   );
 }

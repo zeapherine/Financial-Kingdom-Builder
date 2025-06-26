@@ -127,7 +127,7 @@ class _LeaderboardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color? tileColor = isCurrentUser ? const Color(0xFFD4AF37).withOpacity(0.1) : null;
+    Color? tileColor = isCurrentUser ? const Color(0xFFD4AF37).withValues(alpha: 0.1) : null;
     
     return Card(
       color: tileColor,
