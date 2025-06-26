@@ -1,0 +1,340 @@
+{
+  "styleGuide": {
+    "name": "Duolingo-Inspired Flutter Design System",
+    "version": "1.0.0",
+    "description": "A comprehensive style guide inspired by Duolingo's playful, gamified, and user-friendly design language",
+    
+    "colorPalette": {
+      "primary": {
+        "duoGreen": "#58CC02",
+        "duoGreenDark": "#46A302",
+        "duoGreenLight": "#89E219"
+      },
+      "secondary": {
+        "duoBlue": "#1CB0F6",
+        "duoBlueDark": "#1899D6",
+        "duoBlueLight": "#84D8FF"
+      },
+      "accent": {
+        "duoYellow": "#FFC800",
+        "duoOrange": "#FF9600",
+        "duoRed": "#FF4B4B",
+        "duoPurple": "#CE82FF"
+      },
+      "neutral": {
+        "white": "#FFFFFF",
+        "lightGray": "#F7F7F7",
+        "mediumGray": "#AFAFAF",
+        "darkGray": "#777777",
+        "charcoal": "#4B4B4B",
+        "black": "#000000"
+      },
+      "status": {
+        "success": "#58CC02",
+        "warning": "#FFC800",
+        "error": "#FF4B4B",
+        "info": "#1CB0F6"
+      },
+      "gamification": {
+        "streak": "#FF9600",
+        "gems": "#1CB0F6",
+        "hearts": "#FF4B4B",
+        "xp": "#FFC800"
+      }
+    },
+    
+    "typography": {
+      "fontFamily": {
+        "primary": "Nunito",
+        "fallback": ["Roboto", "Arial", "sans-serif"]
+      },
+      "fontSizes": {
+        "h1": 32.0,
+        "h2": 28.0,
+        "h3": 24.0,
+        "h4": 20.0,
+        "bodyLarge": 18.0,
+        "bodyMedium": 16.0,
+        "bodySmall": 14.0,
+        "caption": 12.0,
+        "button": 16.0,
+        "label": 14.0
+      },
+      "fontWeights": {
+        "light": "FontWeight.w300",
+        "regular": "FontWeight.w400",
+        "medium": "FontWeight.w500",
+        "semiBold": "FontWeight.w600",
+        "bold": "FontWeight.w700",
+        "extraBold": "FontWeight.w800"
+      },
+      "lineHeights": {
+        "tight": 1.2,
+        "normal": 1.4,
+        "relaxed": 1.6
+      }
+    },
+    
+    "spacing": {
+      "xs": 4.0,
+      "sm": 8.0,
+      "md": 16.0,
+      "lg": 24.0,
+      "xl": 32.0,
+      "xxl": 48.0,
+      "xxxl": 64.0
+    },
+    
+    "borderRadius": {
+      "small": 8.0,
+      "medium": 12.0,
+      "large": 16.0,
+      "xlarge": 24.0,
+      "pill": 999.0,
+      "circle": "BorderRadius.circular(double.infinity)"
+    },
+    
+    "elevation": {
+      "none": 0.0,
+      "low": 2.0,
+      "medium": 4.0,
+      "high": 8.0,
+      "highest": 16.0
+    },
+    
+    "components": {
+      "buttons": {
+        "primary": {
+          "backgroundColor": "#58CC02",
+          "textColor": "#FFFFFF",
+          "borderRadius": 12.0,
+          "elevation": 4.0,
+          "padding": {
+            "horizontal": 24.0,
+            "vertical": 16.0
+          },
+          "fontSize": 16.0,
+          "fontWeight": "FontWeight.w700",
+          "pressedState": {
+            "backgroundColor": "#46A302",
+            "elevation": 2.0
+          }
+        },
+        "secondary": {
+          "backgroundColor": "#1CB0F6",
+          "textColor": "#FFFFFF",
+          "borderRadius": 12.0,
+          "elevation": 4.0,
+          "padding": {
+            "horizontal": 24.0,
+            "vertical": 16.0
+          }
+        },
+        "outline": {
+          "backgroundColor": "transparent",
+          "textColor": "#58CC02",
+          "borderColor": "#58CC02",
+          "borderWidth": 2.0,
+          "borderRadius": 12.0,
+          "padding": {
+            "horizontal": 24.0,
+            "vertical": 16.0
+          }
+        },
+        "text": {
+          "backgroundColor": "transparent",
+          "textColor": "#58CC02",
+          "borderRadius": 8.0,
+          "padding": {
+            "horizontal": 16.0,
+            "vertical": 8.0
+          }
+        }
+      },
+      
+      "cards": {
+        "lesson": {
+          "backgroundColor": "#FFFFFF",
+          "borderRadius": 16.0,
+          "elevation": 4.0,
+          "padding": 20.0,
+          "margin": 8.0,
+          "borderColor": "#F0F0F0",
+          "borderWidth": 1.0
+        },
+        "achievement": {
+          "backgroundColor": "#FFC800",
+          "borderRadius": 12.0,
+          "elevation": 6.0,
+          "padding": 16.0,
+          "textColor": "#FFFFFF"
+        },
+        "streak": {
+          "backgroundColor": "#FF9600",
+          "borderRadius": 12.0,
+          "elevation": 4.0,
+          "padding": 16.0,
+          "textColor": "#FFFFFF"
+        }
+      },
+      
+      "progressBars": {
+        "lesson": {
+          "backgroundColor": "#F0F0F0",
+          "progressColor": "#58CC02",
+          "height": 8.0,
+          "borderRadius": 4.0
+        },
+        "xp": {
+          "backgroundColor": "#F0F0F0",
+          "progressColor": "#FFC800",
+          "height": 12.0,
+          "borderRadius": 6.0
+        }
+      },
+      
+      "icons": {
+        "size": {
+          "small": 16.0,
+          "medium": 24.0,
+          "large": 32.0,
+          "xlarge": 48.0
+        },
+        "colors": {
+          "primary": "#58CC02",
+          "secondary": "#1CB0F6",
+          "accent": "#FFC800",
+          "neutral": "#777777"
+        }
+      },
+      
+      "containers": {
+        "screen": {
+          "backgroundColor": "#FFFFFF",
+          "padding": 16.0
+        },
+        "section": {
+          "backgroundColor": "#F7F7F7",
+          "borderRadius": 12.0,
+          "padding": 16.0,
+          "margin": 8.0
+        }
+      }
+    },
+    
+    "animations": {
+      "duration": {
+        "fast": "Duration(milliseconds: 150)",
+        "normal": "Duration(milliseconds: 300)",
+        "slow": "Duration(milliseconds: 500)"
+      },
+      "curves": {
+        "bounce": "Curves.bounceOut",
+        "elastic": "Curves.elasticOut",
+        "ease": "Curves.easeInOut"
+      },
+      "effects": {
+        "buttonPress": {
+          "scale": 0.95,
+          "duration": "Duration(milliseconds: 100)"
+        },
+        "cardHover": {
+          "elevation": 8.0,
+          "duration": "Duration(milliseconds: 200)"
+        },
+        "success": {
+          "type": "bounce",
+          "duration": "Duration(milliseconds: 600)"
+        }
+      }
+    },
+    
+    "gamificationElements": {
+      "streakCounter": {
+        "backgroundColor": "#FF9600",
+        "textColor": "#FFFFFF",
+        "iconColor": "#FFFFFF",
+        "borderRadius": 20.0,
+        "padding": 12.0
+      },
+      "xpBadge": {
+        "backgroundColor": "#FFC800",
+        "textColor": "#FFFFFF",
+        "borderRadius": 16.0,
+        "padding": 8.0
+      },
+      "heartCounter": {
+        "color": "#FF4B4B",
+        "size": 24.0
+      },
+      "gemCounter": {
+        "color": "#1CB0F6",
+        "size": 24.0
+      },
+      "levelBadge": {
+        "backgroundColor": "#CE82FF",
+        "textColor": "#FFFFFF",
+        "borderRadius": "pill",
+        "padding": 12.0,
+        "fontSize": 14.0,
+        "fontWeight": "FontWeight.w700"
+      }
+    },
+    
+    "designPrinciples": [
+      "Use rounded corners extensively (8px minimum)",
+      "Implement generous white space for breathing room",
+      "Apply vibrant colors for positive emotional impact",
+      "Include micro-interactions for engagement",
+      "Maintain consistent visual hierarchy",
+      "Use bold typography for clear communication",
+      "Implement gamification elements prominently",
+      "Ensure high contrast for accessibility",
+      "Use shadow/elevation for depth perception",
+      "Keep navigation simple and intuitive"
+    ],
+    
+    "commonPatterns": {
+      "lessonTile": {
+        "description": "Circular lesson nodes with progress indicators",
+        "style": {
+          "shape": "circle",
+          "size": 64.0,
+          "backgroundColor": "#58CC02",
+          "borderColor": "#46A302",
+          "borderWidth": 3.0,
+          "elevation": 4.0
+        }
+      },
+      "practiceButton": {
+        "description": "Large, prominent practice buttons",
+        "style": {
+          "backgroundColor": "#58CC02",
+          "height": 56.0,
+          "borderRadius": 12.0,
+          "elevation": 4.0,
+          "textColor": "#FFFFFF",
+          "fontSize": 18.0,
+          "fontWeight": "FontWeight.w700"
+        }
+      },
+      "skillTree": {
+        "description": "Vertical progression path with connected nodes",
+        "style": {
+          "nodeSpacing": 80.0,
+          "connectionColor": "#AFAFAF",
+          "connectionWidth": 3.0,
+          "nodeSize": 64.0
+        }
+      }
+    },
+    
+    "accessibility": {
+      "minTouchTarget": 44.0,
+      "contrastRatio": "4.5:1 minimum",
+      "fontSize": "16px minimum for body text",
+      "colorBlindnessSupport": "Use icons/shapes alongside colors",
+      "screenReaderSupport": "Include semantic labels"
+    }
+  }
+}

@@ -1,93 +1,121 @@
 import 'package:flutter/material.dart';
+import 'duolingo_theme.dart';
 
 class AppTheme {
-  // Kingdom-themed color palette
-  static const Color primaryGold = Color(0xFFD4AF37);
-  static const Color secondaryBlue = Color(0xFF1E3A8A);
-  static const Color accentGreen = Color(0xFF059669);
-  static const Color warningRed = Color(0xFFDC2626);
-  static const Color backgroundCream = Color(0xFFFAF7F0);
-  static const Color surfaceWhite = Color(0xFFFFFFFF);
-  static const Color textDark = Color(0xFF1F2937);
-  static const Color textGray = Color(0xFF6B7280);
-
-  static final ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryGold,
-      brightness: Brightness.light,
-      primary: primaryGold,
-      secondary: secondaryBlue,
-      surface: backgroundCream,
-      error: warningRed,
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: primaryGold,
-      foregroundColor: textDark,
-      elevation: 2,
-      centerTitle: true,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: primaryGold,
-        foregroundColor: textDark,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      fontFamily: 'Nunito',
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: DuolingoTheme.duoGreen,
+        brightness: Brightness.light,
+        primary: DuolingoTheme.duoGreen,
+        secondary: DuolingoTheme.duoBlue,
+        surface: DuolingoTheme.white,
+      ),
+      scaffoldBackgroundColor: DuolingoTheme.lightGray,
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: DuolingoTheme.white,
+        foregroundColor: DuolingoTheme.charcoal,
+        titleTextStyle: DuolingoTheme.h4.copyWith(
+          color: DuolingoTheme.charcoal,
+        ),
+        iconTheme: const IconThemeData(
+          color: DuolingoTheme.charcoal,
+          size: DuolingoTheme.iconMedium,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(DuolingoTheme.radiusLarge),
+          ),
         ),
       ),
-    ),
-    cardTheme: const CardThemeData(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: DuolingoTheme.primaryButton,
       ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: DuolingoTheme.outlineButton,
       ),
-      filled: true,
-      fillColor: surfaceWhite,
-    ),
-  );
-
-  static final ThemeData darkTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryGold,
-      brightness: Brightness.dark,
-      primary: primaryGold,
-      secondary: secondaryBlue,
-      error: warningRed,
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF1F2937),
-      foregroundColor: primaryGold,
-      elevation: 2,
-      centerTitle: true,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: primaryGold,
-        foregroundColor: textDark,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      cardTheme: CardThemeData(
+        elevation: 4,
+        color: DuolingoTheme.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DuolingoTheme.radiusLarge),
+        ),
+        clipBehavior: Clip.antiAlias,
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: DuolingoTheme.white,
+        selectedItemColor: DuolingoTheme.duoGreen,
+        unselectedItemColor: DuolingoTheme.mediumGray,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+        selectedLabelStyle: DuolingoTheme.caption.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: DuolingoTheme.caption,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: DuolingoTheme.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
+          borderSide: const BorderSide(color: DuolingoTheme.mediumGray),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
+          borderSide: const BorderSide(color: DuolingoTheme.mediumGray),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
+          borderSide: const BorderSide(color: DuolingoTheme.duoGreen, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: DuolingoTheme.spacingMd,
+          vertical: DuolingoTheme.spacingMd,
         ),
       ),
-    ),
-    cardTheme: const CardThemeData(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
+      textTheme: const TextTheme(
+        displayLarge: DuolingoTheme.h1,
+        displayMedium: DuolingoTheme.h2,
+        displaySmall: DuolingoTheme.h3,
+        headlineMedium: DuolingoTheme.h4,
+        bodyLarge: DuolingoTheme.bodyLarge,
+        bodyMedium: DuolingoTheme.bodyMedium,
+        bodySmall: DuolingoTheme.bodySmall,
+        labelLarge: DuolingoTheme.button,
+        labelSmall: DuolingoTheme.caption,
       ),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+    );
+  }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      fontFamily: 'Nunito',
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: DuolingoTheme.duoGreen,
+        brightness: Brightness.dark,
+        primary: DuolingoTheme.duoGreen,
+        secondary: DuolingoTheme.duoBlue,
+        surface: DuolingoTheme.charcoal,
       ),
-      filled: true,
-    ),
-  );
+      scaffoldBackgroundColor: DuolingoTheme.charcoal,
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: DuolingoTheme.charcoal,
+        foregroundColor: DuolingoTheme.white,
+        titleTextStyle: DuolingoTheme.h4.copyWith(
+          color: DuolingoTheme.white,
+        ),
+        iconTheme: const IconThemeData(
+          color: DuolingoTheme.white,
+          size: DuolingoTheme.iconMedium,
+        ),
+      ),
+    );
+  }
 }
