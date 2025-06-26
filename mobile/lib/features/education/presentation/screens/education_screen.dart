@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/config/duolingo_theme.dart';
 import '../../../../shared/widgets/duo_card.dart';
 import '../../../../shared/widgets/duo_progress_bar.dart';
+import '../../../../shared/widgets/app_drawer.dart';
 
 class EducationScreen extends ConsumerWidget {
   const EducationScreen({super.key});
@@ -13,17 +14,8 @@ class EducationScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Financial Education'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              context.go('/');
-            }
-          },
-        ),
       ),
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
         child: Column(

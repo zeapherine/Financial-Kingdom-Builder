@@ -4,31 +4,67 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/config/duolingo_theme.dart';
 import '../../../../shared/widgets/duo_card.dart';
 import '../../../../shared/widgets/gamification_widgets.dart';
+import '../../../../shared/widgets/app_drawer.dart';
+import '../../../../shared/widgets/tutorial_overlay.dart';
+import '../../../../shared/widgets/tutorial_target.dart';
 
-class KingdomScreen extends ConsumerWidget {
+class KingdomScreen extends ConsumerStatefulWidget {
   const KingdomScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
+  ConsumerState<KingdomScreen> createState() => _KingdomScreenState();
+}
+
+class _KingdomScreenState extends ConsumerState<KingdomScreen> {
+  final GlobalKey _levelBadgeKey = GlobalKey();
+  final GlobalKey _libraryKey = GlobalKey();
+  final GlobalKey _drawerKey = GlobalKey();
+  final GlobalKey _xpBadgeKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return TutorialOverlay(
+      steps: [
+        TutorialStep(
+          targetKey: _drawerKey,
+          title: 'Navigation Menu',
+          description: 'Tap the menu icon to access your profile, settings, and more!',
+          tooltipPosition: const Offset(20, 100),
+        ),
+        TutorialStep(
+          targetKey: _xpBadgeKey,
+          title: 'Experience Points',
+          description: 'Complete lessons and trading activities to earn XP and level up!',
+          tooltipPosition: const Offset(50, 100),
+        ),
+        TutorialStep(
+          targetKey: _levelBadgeKey,
+          title: 'Your Current Level',
+          description: 'Start as a Village Citizen and progress to Kingdom Mastery through education!',
+          tooltipPosition: const Offset(50, 200),
+        ),
+        TutorialStep(
+          targetKey: _libraryKey,
+          title: 'Library - Start Here!',
+          description: 'Begin your journey with financial education. Complete modules to unlock trading features.',
+          tooltipPosition: const Offset(50, 300),
+        ),
+      ],
+      onComplete: () {
+        // TODO: Mark tutorial as completed in preferences
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Your Kingdom'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              context.go('/');
-            }
-          },
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: DuolingoTheme.spacingMd),
             child: Row(
               children: [
-                const XPBadge(xp: 150),
+                TutorialTarget(
+                  tutorialKey: _xpBadgeKey,
+                  child: const XPBadge(xp: 150),
+                ),
                 const SizedBox(width: DuolingoTheme.spacingSm),
                 const StreakCounter(streakCount: 7),
               ],
@@ -36,15 +72,19 @@ class KingdomScreen extends ConsumerWidget {
           ),
         ],
       ),
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Level Badge
-            const LevelBadge(
-              level: 'Village Citizen',
-              subtitle: 'Level 1',
+            TutorialTarget(
+              tutorialKey: _levelBadgeKey,
+              child: const LevelBadge(
+                level: 'Village Citizen',
+                subtitle: 'Level 1',
+              ),
             ),
             const SizedBox(height: DuolingoTheme.spacingLg),
             
@@ -92,12 +132,15 @@ class KingdomScreen extends ConsumerWidget {
               crossAxisSpacing: DuolingoTheme.spacingMd,
               mainAxisSpacing: DuolingoTheme.spacingMd,
               children: [
-                _KingdomBuilding(
-                  icon: Icons.library_books,
-                  label: 'Library',
-                  description: 'Learn & Study',
-                  isUnlocked: true,
-                  onTap: () => context.go('/education'),
+                TutorialTarget(
+                  tutorialKey: _libraryKey,
+                  child: _KingdomBuilding(
+                    icon: Icons.library_books,
+                    label: 'Library',
+                    description: 'Learn & Study',
+                    isUnlocked: true,
+                    onTap: () => context.go('/education'),
+                  ),
                 ),
                 _KingdomBuilding(
                   icon: Icons.store,
@@ -123,6 +166,7 @@ class KingdomScreen extends ConsumerWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

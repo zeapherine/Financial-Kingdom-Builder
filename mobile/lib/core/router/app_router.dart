@@ -7,6 +7,9 @@ import '../../features/education/presentation/screens/education_screen.dart';
 import '../../features/trading/presentation/screens/trading_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../shared/presentation/screens/home_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -42,6 +45,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/social',
         name: 'social',
         builder: (context, state) => const SocialScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

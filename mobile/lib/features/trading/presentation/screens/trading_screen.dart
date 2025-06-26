@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../shared/widgets/app_drawer.dart';
 
 class TradingScreen extends ConsumerWidget {
   const TradingScreen({super.key});
@@ -10,17 +11,8 @@ class TradingScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trading Post'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              context.go('/');
-            }
-          },
-        ),
       ),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
