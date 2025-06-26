@@ -28,7 +28,16 @@
       "Bash(export PATH=\"$HOME/.asdf/shims:$PATH\")",
       "Bash(starknet-devnet:*)",
       "mcp__cairo-coder__assist_with_cairo",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(export:*)",
+      "Bash(open:*)",
+      "Bash(dart run build_runner build:*)",
+      "Bash(xcrun simctl list:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(xcrun simctl boot:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(pod install:*)"
     ],
     "deny": []
   }

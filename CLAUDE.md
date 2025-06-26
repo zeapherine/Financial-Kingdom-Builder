@@ -10,6 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 1. **Read CLAUDE.md** (this file) - to understand project workflow and requirements
 2. **Read PLANNING.md** - to understand architecture, goals, style, and constraints  
 3. **Read TASK.md** - to check current task status, priorities, and what's in progress
+4. **Read STYLES.md** - (from /mobile and /mobile/styles.json ) to follow the styles guidelines and styles to follow for the UI
 
 ### Step 2: Check Git Status
 4. **Run `git status`** - to check for uncommitted work and understand current state
@@ -27,6 +28,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Always read `PLANNING.md`** at the start of a new conversation to understand the project's architecture, goals, style, and constraints.
 - **Check `TASK.md`** before starting a new task. If the task isn't listed, add it with a brief description and today's date.
 - **Use consistent naming conventions, file structure, and architecture patterns** as described in `PLANNING.md`.
+- **use STYLES.md** - (from /mobile and /mobile/styles.json ) to follow the styles guidelines and styles to follow for the UI
 
 ### 🧱 Code Structure & Modularity
 - **Never create a file longer than 500 lines of code.** If a file approaches this limit, refactor by splitting it into modules or helper files.
