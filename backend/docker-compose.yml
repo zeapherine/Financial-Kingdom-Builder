@@ -19,7 +19,13 @@ services:
       - SOCIAL_SERVICE_URL=http://social-service:3004
       - NOTIFICATION_SERVICE_URL=http://notification-service:3005
       - JWT_SECRET=dev-secret-change-in-production
+      - POSTGRES_URL=postgresql://financial_kingdom:financial_kingdom_password@postgres:5432/financial_kingdom
+      - REDIS_URL=redis://:financial_kingdom_redis_password@redis:6379
+      - MONGODB_URL=mongodb://financial_kingdom:financial_kingdom_mongodb_password@mongodb:27017/financial_kingdom?authSource=admin
     depends_on:
+      - postgres
+      - redis
+      - mongodb
       - trading-service
       - gamification-service
       - education-service
@@ -41,6 +47,11 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3001
+      - POSTGRES_URL=postgresql://financial_kingdom:financial_kingdom_password@postgres:5432/financial_kingdom
+      - REDIS_URL=redis://:financial_kingdom_redis_password@redis:6379
+    depends_on:
+      - postgres
+      - redis
     networks:
       - financial-kingdom-network
 
@@ -57,6 +68,11 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3002
+      - POSTGRES_URL=postgresql://financial_kingdom:financial_kingdom_password@postgres:5432/financial_kingdom
+      - REDIS_URL=redis://:financial_kingdom_redis_password@redis:6379
+    depends_on:
+      - postgres
+      - redis
     networks:
       - financial-kingdom-network
 
@@ -73,6 +89,11 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3003
+      - POSTGRES_URL=postgresql://financial_kingdom:financial_kingdom_password@postgres:5432/financial_kingdom
+      - MONGODB_URL=mongodb://financial_kingdom:financial_kingdom_mongodb_password@mongodb:27017/financial_kingdom?authSource=admin
+    depends_on:
+      - postgres
+      - mongodb
     networks:
       - financial-kingdom-network
 
@@ -89,6 +110,11 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3004
+      - POSTGRES_URL=postgresql://financial_kingdom:financial_kingdom_password@postgres:5432/financial_kingdom
+      - REDIS_URL=redis://:financial_kingdom_redis_password@redis:6379
+    depends_on:
+      - postgres
+      - redis
     networks:
       - financial-kingdom-network
 
@@ -105,6 +131,71 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3005
+    depends_on:
+      - postgres
+      - redis
+      - mongodb
+    networks:
+      - financial-kingdom-network
+
+  # PostgreSQL Database with TimescaleDB
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: financial-kingdom-postgres
+    environment:
+      - POSTGRES_DB=financial_kingdom
+      - POSTGRES_USER=financial_kingdom
+      - POSTGRES_PASSWORD=financial_kingdom_password
+      - POSTGRES_MULTIPLE_DATABASES=financial_kingdom,financial_kingdom_test
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/migrations:/migrations
+    networks:
+      - financial-kingdom-network
+    command: [
+      "postgres",
+      "-c", "shared_preload_libraries=timescaledb",
+      "-c", "max_connections=200",
+      "-c", "shared_buffers=256MB",
+      "-c", "effective_cache_size=1GB",
+      "-c", "maintenance_work_mem=64MB",
+      "-c", "checkpoint_completion_target=0.9",
+      "-c", "wal_buffers=16MB",
+      "-c", "default_statistics_target=100",
+      "-c", "random_page_cost=1.1",
+      "-c", "effective_io_concurrency=200"
+    ]
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: financial-kingdom-redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=financial_kingdom_redis_password
+    volumes:
+      - redis_data:/data
+    networks:
+      - financial-kingdom-network
+    command: redis-server --requirepass financial_kingdom_redis_password --maxmemory 512mb --maxmemory-policy allkeys-lru
+
+  # MongoDB
+  mongodb:
+    image: mongo:7
+    container_name: financial-kingdom-mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=financial_kingdom
+      - MONGO_INITDB_ROOT_PASSWORD=financial_kingdom_mongodb_password
+      - MONGO_INITDB_DATABASE=financial_kingdom
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./database/mongodb-init:/docker-entrypoint-initdb.d
     networks:
       - financial-kingdom-network
 

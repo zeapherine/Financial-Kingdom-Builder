@@ -14,6 +14,16 @@ import { healthRouter } from './routes/health';
 import { proxyConfig } from './config/proxy-config';
 import { AppError } from './utils/app-error';
 
+// Import database utilities from shared package
+import { 
+  initializeDatabases, 
+  closeDatabases, 
+  getDatabaseManager,
+  createHealthChecker,
+  createHealthEndpoints,
+  setupGracefulShutdown
+} from '@financial-kingdom/shared';
+
 dotenv.config();
 
 const app = express();
@@ -74,28 +84,89 @@ app.use('*', (req, res, next) => {
 
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
-  logger.info(`API Gateway running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV}`);
-});
+// Initialize database connections and health monitoring
+async function startServer() {
+  try {
+    // Initialize database connections
+    logger.info('Initializing database connections...');
+    await initializeDatabases();
+    
+    // Create and initialize health checker
+    const databaseManager = getDatabaseManager();
+    const healthChecker = createHealthChecker(databaseManager);
+    await healthChecker.initialize();
+    
+    // Add enhanced health endpoints
+    const healthEndpoints = createHealthEndpoints();
+    app.get('/health/detailed', healthEndpoints.healthDetailed);
+    app.get('/ready', healthEndpoints.ready);
+    app.get('/live', healthEndpoints.live);
+    app.get('/metrics', healthEndpoints.metrics);
+    app.get('/metrics/history', healthEndpoints.metricsHistory);
+    
+    // Start periodic monitoring
+    const monitoringInterval = healthChecker.startPeriodicMonitoring(60000); // Every minute
+    
+    // Setup graceful shutdown for databases
+    setupGracefulShutdown();
+    
+    const server = app.listen(PORT, () => {
+      logger.info(`API Gateway running on port ${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV}`);
+      logger.info('Database connections established');
+      logger.info('Health monitoring started');
+    });
 
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    logger.info('Process terminated');
-  });
-});
+    // Enhanced graceful shutdown
+    const gracefulShutdown = async (signal: string) => {
+      logger.info(`${signal} received, shutting down gracefully`);
+      
+      // Stop health monitoring
+      if (monitoringInterval) {
+        healthChecker.stopPeriodicMonitoring(monitoringInterval);
+      }
+      
+      // Close HTTP server
+      server.close(async () => {
+        try {
+          // Close database connections
+          await closeDatabases();
+          logger.info('Database connections closed');
+          logger.info('Process terminated gracefully');
+          process.exit(0);
+        } catch (error) {
+          logger.error('Error during graceful shutdown:', error);
+          process.exit(1);
+        }
+      });
+      
+      // Force exit after 30 seconds
+      setTimeout(() => {
+        logger.error('Forceful shutdown after timeout');
+        process.exit(1);
+      }, 30000);
+    };
 
-process.on('uncaughtException', (err) => {
-  logger.error('Uncaught Exception:', err);
-  process.exit(1);
-});
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-process.on('unhandledRejection', (err) => {
-  logger.error('Unhandled Rejection:', err);
-  server.close(() => {
+    process.on('uncaughtException', async (err) => {
+      logger.error('Uncaught Exception:', err);
+      await gracefulShutdown('UNCAUGHT_EXCEPTION');
+    });
+
+    process.on('unhandledRejection', async (err) => {
+      logger.error('Unhandled Rejection:', err);
+      await gracefulShutdown('UNHANDLED_REJECTION');
+    });
+
+  } catch (error) {
+    logger.error('Failed to start server:', error);
     process.exit(1);
-  });
-});
+  }
+}
+
+// Start the server
+startServer();
 
 export default app;

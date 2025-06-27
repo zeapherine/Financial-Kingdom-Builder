@@ -15,5 +15,8 @@
   },
   "keywords": ["api-gateway", "microservices", "financial", "trading"],
   "author": "Financial Kingdom Builder Team",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@financial-kingdom/shared": "file:../shared"
+  }
 }

@@ -37,7 +37,16 @@
       "Bash(git push:*)",
       "Bash(xcrun simctl boot:*)",
       "Bash(xcodebuild:*)",
-      "Bash(pod install:*)"
+      "Bash(pod install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(starknet-foundry:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(mv:*)",
+      "Bash(snfoundryup)",
+      "Bash($HOME/.local/bin/snforge:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }

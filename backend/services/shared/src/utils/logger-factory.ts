@@ -56,3 +56,9 @@ export const createLogger = (config: LoggerConfig): winston.Logger => {
     transports,
   });
 };
+
+// Default logger for shared utilities
+export const logger = createLogger({ 
+  service: 'shared',
+  level: process.env.LOG_LEVEL || 'info'
+});
