@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - TRADING_SERVICE_URL=http://trading-service:3001
+      - GAMIFICATION_SERVICE_URL=http://gamification-service:3002
+      - EDUCATION_SERVICE_URL=http://education-service:3003
+      - SOCIAL_SERVICE_URL=http://social-service:3004
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3005
+      - JWT_SECRET=dev-secret-change-in-production
+    depends_on:
+      - trading-service
+      - gamification-service
+      - education-service
+      - social-service
+      - notification-service
+    networks:
+      - financial-kingdom-network
+
+  # Trading Service
+  trading-service:
+    build:
+      context: ./services/trading
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+    networks:
+      - financial-kingdom-network
+
+  # Gamification Service
+  gamification-service:
+    build:
+      context: ./services/gamification
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+    networks:
+      - financial-kingdom-network
+
+  # Education Service
+  education-service:
+    build:
+      context: ./services/education
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+    networks:
+      - financial-kingdom-network
+
+  # Social Service
+  social-service:
+    build:
+      context: ./services/social
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+    networks:
+      - financial-kingdom-network
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notifications
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+    networks:
+      - financial-kingdom-network
+
+networks:
+  financial-kingdom-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  mongodb_data:
