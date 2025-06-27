@@ -1,0 +1,78 @@
+{
+  "name": "@financial-kingdom/backend",
+  "version": "1.0.0",
+  "description": "Financial Kingdom Builder Backend Microservices Monorepo",
+  "private": true,
+  "workspaces": [
+    "services/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "build:shared": "npm run build -w @financial-kingdom/shared",
+    "build:api-gateway": "npm run build -w @financial-kingdom/api-gateway",
+    "build:trading": "npm run build -w @financial-kingdom/trading",
+    "build:social": "npm run build -w @financial-kingdom/social",
+    "build:education": "npm run build -w @financial-kingdom/education",
+    "build:gamification": "npm run build -w @financial-kingdom/gamification",
+    "build:notifications": "npm run build -w @financial-kingdom/notifications",
+    "dev": "npm run dev --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "clean": "rimraf packages/*/dist && rimraf dist",
+    "start:api-gateway": "npm run start -w @financial-kingdom/api-gateway",
+    "start:trading": "npm run start -w @financial-kingdom/trading",
+    "start:social": "npm run start -w @financial-kingdom/social",
+    "start:education": "npm run start -w @financial-kingdom/education",
+    "start:gamification": "npm run start -w @financial-kingdom/gamification",
+    "start:notifications": "npm run start -w @financial-kingdom/notifications"
+  },
+  "keywords": [
+    "financial",
+    "trading",
+    "education",
+    "gamification",
+    "microservices",
+    "backend"
+  ],
+  "author": "Financial Kingdom Builder Team",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "http-proxy-middleware": "^2.0.6",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/http-proxy-middleware": "^1.0.0",
+    "@types/jest": "^29.5.8",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.19.1",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

@@ -4,8 +4,11 @@ services:
   # API Gateway
   api-gateway:
     build:
-      context: ./services/api-gateway
+      context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: api-gateway
+        PORT: 3000
     ports:
       - "3000:3000"
     environment:
@@ -28,8 +31,11 @@ services:
   # Trading Service
   trading-service:
     build:
-      context: ./services/trading
+      context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: trading
+        PORT: 3001
     ports:
       - "3001:3001"
     environment:
@@ -41,8 +47,11 @@ services:
   # Gamification Service
   gamification-service:
     build:
-      context: ./services/gamification
+      context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: gamification
+        PORT: 3002
     ports:
       - "3002:3002"
     environment:
@@ -54,8 +63,11 @@ services:
   # Education Service
   education-service:
     build:
-      context: ./services/education
+      context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: education
+        PORT: 3003
     ports:
       - "3003:3003"
     environment:
@@ -67,8 +79,11 @@ services:
   # Social Service
   social-service:
     build:
-      context: ./services/social
+      context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: social
+        PORT: 3004
     ports:
       - "3004:3004"
     environment:
@@ -80,8 +95,11 @@ services:
   # Notification Service
   notification-service:
     build:
-      context: ./services/notifications
+      context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: notifications
+        PORT: 3005
     ports:
       - "3005:3005"
     environment:

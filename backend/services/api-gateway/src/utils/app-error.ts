@@ -10,6 +10,8 @@ export class AppError extends Error {
     this.isOperational = true;
     this.data = data;
 
-    Error.captureStackTrace(this, this.constructor);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
   }
 }

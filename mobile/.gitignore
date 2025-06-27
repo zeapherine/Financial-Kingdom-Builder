@@ -43,3 +43,55 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# iOS & macOS build artifacts and dependencies
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Runner.xcworkspace/
+ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+ios/Runner/GeneratedPluginRegistrant.*
+ios/build/
+
+macos/Pods/
+macos/.symlinks/
+macos/Flutter/ephemeral/
+macos/Flutter/Flutter-Generated.xcconfig
+macos/Flutter/flutter_export_environment.sh
+macos/Runner.xcworkspace/xcuserdata/
+macos/Runner.xcodeproj/xcuserdata/
+macos/build/
+
+# Xcode user data
+xcuserdata/
+**/xcuserdata/
+
+# Xcode workspace and project files (keep project.pbxproj)
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+
+# Code generation
+*.g.dart
+*.freezed.dart
+*.gr.dart
+
+# Build outputs
+*.dSYM.zip
+*.ipa
+*.apk
+*.aab
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
