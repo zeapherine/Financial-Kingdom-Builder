@@ -59,7 +59,10 @@ pub trait IKingdomState<TContractState> {
 #[starknet::contract]
 pub mod KingdomState {
     use starknet::ContractAddress;
-    use starknet::storage::{Map, StorageMapReadAccess, StorageMapWriteAccess, StoragePathEntry};
+    use starknet::storage::{
+        Map, StoragePointerReadAccess, StoragePointerWriteAccess, 
+        StorageMapReadAccess, StorageMapWriteAccess
+    };
     use starknet::{get_caller_address, get_block_timestamp};
     use super::{TierRequirements, UserProgress, KingdomTier};
 
@@ -124,7 +127,7 @@ pub mod KingdomState {
     #[abi(embed_v0)]
     impl KingdomStateImpl of super::IKingdomState<ContractState> {
         fn initialize_user(ref self: ContractState, user: ContractAddress) {
-            let current_tier = self.user_tiers.entry(user).read();
+            let current_tier = self.user_tiers.read(user);
             if current_tier.tier > 0 {
                 return;
             }
@@ -148,8 +151,8 @@ pub mod KingdomState {
                 last_activity_timestamp: get_block_timestamp(),
             };
 
-            self.user_tiers.entry(user).write(initial_tier);
-            self.user_progress.entry(user).write(initial_progress);
+            self.user_tiers.write(user, initial_tier);
+            self.user_progress.write(user, initial_progress);
             
             let new_count = self.total_users_count.read() + 1;
             self.total_users_count.write(new_count);
@@ -173,7 +176,7 @@ pub mod KingdomState {
         ) {
             self._assert_only_progress_updater();
             
-            let old_progress = self.user_progress.entry(user).read();
+            let old_progress = self.user_progress.read(user);
             let timestamp = get_block_timestamp();
             
             let new_progress = UserProgress {
@@ -204,7 +207,7 @@ pub mod KingdomState {
                 last_activity_timestamp: timestamp,
             };
 
-            self.user_progress.entry(user).write(new_progress);
+            self.user_progress.write(user, new_progress);
 
             self.emit(Event::ProgressUpdated(ProgressUpdated {
                 user,
@@ -213,15 +216,15 @@ pub mod KingdomState {
         }
 
         fn check_tier_advancement(ref self: ContractState, user: ContractAddress) -> bool {
-            let current_tier = self.user_tiers.entry(user).read();
-            let progress = self.user_progress.entry(user).read();
+            let current_tier = self.user_tiers.read(user);
+            let progress = self.user_progress.read(user);
             
             if current_tier.tier >= 4 {
                 return false;
             }
             
             let next_tier = current_tier.tier + 1;
-            let requirements = self.tier_requirements.entry(next_tier).read();
+            let requirements = self.tier_requirements.read(next_tier);
             
             self._check_requirements_met(progress, requirements)
         }
@@ -233,7 +236,7 @@ pub mod KingdomState {
                 return 0;
             }
             
-            let old_tier = self.user_tiers.entry(user).read();
+            let old_tier = self.user_tiers.read(user);
             let new_tier_number = old_tier.tier + 1;
             let tier_name = self._get_tier_name(new_tier_number);
             
@@ -244,7 +247,7 @@ pub mod KingdomState {
                 requirements_met: true,
             };
             
-            self.user_tiers.entry(user).write(new_tier);
+            self.user_tiers.write(user, new_tier);
             
             self.emit(Event::TierAdvanced(TierAdvanced {
                 user,
@@ -258,20 +261,20 @@ pub mod KingdomState {
         }
 
         fn get_user_tier(self: @ContractState, user: ContractAddress) -> KingdomTier {
-            self.user_tiers.entry(user).read()
+            self.user_tiers.read(user)
         }
 
         fn get_user_progress(self: @ContractState, user: ContractAddress) -> UserProgress {
-            self.user_progress.entry(user).read()
+            self.user_progress.read(user)
         }
 
         fn get_tier_requirements(self: @ContractState, tier: u8) -> TierRequirements {
-            self.tier_requirements.entry(tier).read()
+            self.tier_requirements.read(tier)
         }
 
         fn set_tier_requirements(ref self: ContractState, tier: u8, requirements: TierRequirements) {
             self._assert_only_owner();
-            self.tier_requirements.entry(tier).write(requirements);
+            self.tier_requirements.write(tier, requirements);
             
             self.emit(Event::TierRequirementsSet(TierRequirementsSet {
                 tier,
@@ -280,7 +283,7 @@ pub mod KingdomState {
 
         fn set_progress_updater(ref self: ContractState, updater: ContractAddress, allowed: bool) {
             self._assert_only_owner();
-            self.progress_updaters.entry(updater).write(allowed);
+            self.progress_updaters.write(updater, allowed);
             
             self.emit(Event::ProgressUpdaterSet(ProgressUpdaterSet {
                 updater,
@@ -289,7 +292,7 @@ pub mod KingdomState {
         }
 
         fn is_progress_updater(self: @ContractState, updater: ContractAddress) -> bool {
-            self.progress_updaters.entry(updater).read()
+            self.progress_updaters.read(updater)
         }
 
         fn get_owner(self: @ContractState) -> ContractAddress {
@@ -302,8 +305,8 @@ pub mod KingdomState {
         fn _assert_only_progress_updater(self: @ContractState) {
             let caller = get_caller_address();
             assert(
-                self.progress_updaters.entry(caller).read() || caller == self.owner.read(),
-                'Not authorized to update progress'
+                self.progress_updaters.read(caller) || caller == self.owner.read(),
+                'Not authorized'
             );
         }
 
@@ -321,7 +324,7 @@ pub mod KingdomState {
                 capital_preservation_pct: 90,
                 risk_management_score: 50,
             };
-            self.tier_requirements.entry(2).write(tier_2_req);
+            self.tier_requirements.write(2, tier_2_req);
 
             let tier_3_req = TierRequirements {
                 virtual_trades_count: 15,
@@ -331,7 +334,7 @@ pub mod KingdomState {
                 capital_preservation_pct: 85,
                 risk_management_score: 70,
             };
-            self.tier_requirements.entry(3).write(tier_3_req);
+            self.tier_requirements.write(3, tier_3_req);
 
             let tier_4_req = TierRequirements {
                 virtual_trades_count: 50,
@@ -341,7 +344,7 @@ pub mod KingdomState {
                 capital_preservation_pct: 80,
                 risk_management_score: 85,
             };
-            self.tier_requirements.entry(4).write(tier_4_req);
+            self.tier_requirements.write(4, tier_4_req);
         }
 
         fn _check_requirements_met(

@@ -56,7 +56,10 @@ pub trait IPaymaster<TContractState> {
 #[starknet::contract]
 pub mod Paymaster {
     use starknet::ContractAddress;
-    use starknet::storage::{Map, StorageMapReadAccess, StorageMapWriteAccess, StoragePathEntry};
+    use starknet::storage::{
+        Map, StoragePointerReadAccess, StoragePointerWriteAccess, 
+        StorageMapReadAccess, StorageMapWriteAccess
+    };
     use starknet::{get_caller_address, get_block_timestamp};
     use super::{UserLimits, PaymasterConfig};
 
@@ -273,7 +276,7 @@ pub mod Paymaster {
             }
             
             user_limits.daily_spent += gas_amount;
-            self.user_limits.entry(user).write(user_limits);
+            self.user_limits.write(user, user_limits);
             
             let new_balance = current_balance - gas_amount;
             self.balance.write(new_balance);
@@ -307,7 +310,7 @@ pub mod Paymaster {
             user_limits.daily_limit = daily_limit;
             user_limits.per_transaction_limit = tx_limit;
             
-            self.user_limits.entry(user).write(user_limits);
+            self.user_limits.write(user, user_limits);
             
             self.emit(Event::UserLimitsSet(UserLimitsSet {
                 user,
@@ -322,7 +325,7 @@ pub mod Paymaster {
             let mut user_limits = self._get_or_create_user_limits(user);
             user_limits.is_whitelisted = true;
             
-            self.user_limits.entry(user).write(user_limits);
+            self.user_limits.write(user, user_limits);
             
             self.emit(Event::UserWhitelisted(UserWhitelisted {
                 user,
@@ -336,7 +339,7 @@ pub mod Paymaster {
             let mut user_limits = self._get_or_create_user_limits(user);
             user_limits.is_whitelisted = false;
             
-            self.user_limits.entry(user).write(user_limits);
+            self.user_limits.write(user, user_limits);
             
             self.emit(Event::UserRemovedFromWhitelist(UserRemovedFromWhitelist {
                 user,
@@ -389,7 +392,7 @@ pub mod Paymaster {
         }
 
         fn get_user_limits(self: @ContractState, user: ContractAddress) -> UserLimits {
-            self.user_limits.entry(user).read()
+            self.user_limits.read(user)
         }
 
         fn get_config(self: @ContractState) -> PaymasterConfig {
@@ -412,7 +415,7 @@ pub mod Paymaster {
                 return false;
             }
             
-            let mut user_limits = self.user_limits.entry(user).read();
+            let mut user_limits = self.user_limits.read(user);
             if user_limits.daily_limit == 0 {
                 return false;
             }
@@ -431,7 +434,7 @@ pub mod Paymaster {
         }
 
         fn get_remaining_daily_limit(self: @ContractState, user: ContractAddress) -> u256 {
-            let mut user_limits = self.user_limits.entry(user).read();
+            let mut user_limits = self.user_limits.read(user);
             let current_day = get_block_timestamp() / 86400;
             
             if user_limits.last_reset_day != current_day {
@@ -459,7 +462,7 @@ pub mod Paymaster {
         }
 
         fn _get_or_create_user_limits(self: @ContractState, user: ContractAddress) -> UserLimits {
-            let mut user_limits = self.user_limits.entry(user).read();
+            let mut user_limits = self.user_limits.read(user);
             
             if user_limits.daily_limit == 0 {
                 let config = self.paymaster_config.read();
