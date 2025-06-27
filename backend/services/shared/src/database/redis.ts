@@ -199,6 +199,138 @@ export class RedisConnection {
     }
   }
 
+  // Additional Redis operations needed by authentication services
+  public async setex(key: string, seconds: number, value: string): Promise<'OK'> {
+    try {
+      return await this.client.setex(key, seconds, value);
+    } catch (error) {
+      logger.error('Redis SETEX error:', { key, seconds, value, error });
+      throw error;
+    }
+  }
+
+  public async sadd(key: string, ...members: string[]): Promise<number> {
+    try {
+      return await this.client.sadd(key, ...members);
+    } catch (error) {
+      logger.error('Redis SADD error:', { key, members, error });
+      throw error;
+    }
+  }
+
+  public async srem(key: string, ...members: string[]): Promise<number> {
+    try {
+      return await this.client.srem(key, ...members);
+    } catch (error) {
+      logger.error('Redis SREM error:', { key, members, error });
+      throw error;
+    }
+  }
+
+  public async smembers(key: string): Promise<string[]> {
+    try {
+      return await this.client.smembers(key);
+    } catch (error) {
+      logger.error('Redis SMEMBERS error:', { key, error });
+      throw error;
+    }
+  }
+
+  public async scard(key: string): Promise<number> {
+    try {
+      return await this.client.scard(key);
+    } catch (error) {
+      logger.error('Redis SCARD error:', { key, error });
+      throw error;
+    }
+  }
+
+  public async incr(key: string): Promise<number> {
+    try {
+      return await this.client.incr(key);
+    } catch (error) {
+      logger.error('Redis INCR error:', { key, error });
+      throw error;
+    }
+  }
+
+  public async lpush(key: string, ...elements: string[]): Promise<number> {
+    try {
+      return await this.client.lpush(key, ...elements);
+    } catch (error) {
+      logger.error('Redis LPUSH error:', { key, elements, error });
+      throw error;
+    }
+  }
+
+  public async scan(cursor: string, matchToken: 'MATCH', pattern: string, countToken: 'COUNT', count: string): Promise<[string, string[]]> {
+    try {
+      const result = await this.client.scan(cursor, matchToken, pattern, countToken, count) as [string, string[]];
+      return result;
+    } catch (error) {
+      logger.error('Redis SCAN error:', { cursor, matchToken, pattern, countToken, count, error });
+      throw error;
+    }
+  }
+
+  public async ttl(key: string): Promise<number> {
+    try {
+      return await this.client.ttl(key);
+    } catch (error) {
+      logger.error('Redis TTL error:', { key, error });
+      throw error;
+    }
+  }
+
+  public async ping(): Promise<string> {
+    try {
+      return await this.client.ping();
+    } catch (error) {
+      logger.error('Redis PING error:', { error });
+      throw error;
+    }
+  }
+
+  public async keys(pattern: string): Promise<string[]> {
+    try {
+      return await this.client.keys(pattern);
+    } catch (error) {
+      logger.error('Redis KEYS error:', { pattern, error });
+      throw error;
+    }
+  }
+
+  public async zremrangebyscore(key: string, min: number | string, max: number | string): Promise<number> {
+    try {
+      return await this.client.zremrangebyscore(key, min, max);
+    } catch (error) {
+      logger.error('Redis ZREMRANGEBYSCORE error:', { key, min, max, error });
+      throw error;
+    }
+  }
+
+  public async zcard(key: string): Promise<number> {
+    try {
+      return await this.client.zcard(key);
+    } catch (error) {
+      logger.error('Redis ZCARD error:', { key, error });
+      throw error;
+    }
+  }
+
+  public async zcount(key: string, min: number | string, max: number | string): Promise<number> {
+    try {
+      return await this.client.zcount(key, min, max);
+    } catch (error) {
+      logger.error('Redis ZCOUNT error:', { key, min, max, error });
+      throw error;
+    }
+  }
+
+  public multi(): any {
+    return this.client.multi();
+  }
+
   // JSON operations for complex data structures
   public async setJson(key: string, value: any, ttl?: number): Promise<'OK'> {
     try {
