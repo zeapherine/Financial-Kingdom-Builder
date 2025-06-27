@@ -62,7 +62,7 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: DuolingoTheme.duoGreen.withOpacity(0.3),
+                          color: DuolingoTheme.duoGreen.withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -209,7 +209,7 @@ class ProfileScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
           ),
           child: Text(
@@ -237,9 +237,9 @@ class ProfileScreen extends ConsumerWidget {
         vertical: DuolingoTheme.spacingSm,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

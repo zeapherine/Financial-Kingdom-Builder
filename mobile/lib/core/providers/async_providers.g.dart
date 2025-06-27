@@ -6,7 +6,7 @@ part of 'async_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userProfileHash() => r'ffd0faac4293ec1331becb3fb1972e4fe65302f4';
+String _$userProfileHash() => r'8f7ba976a6acc91d60617baa08f3c728d428db1f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -164,7 +164,7 @@ class _UserProfileProviderElement
   String get userId => (origin as UserProfileProvider).userId;
 }
 
-String _$educationContentHash() => r'46e2f56a80a61833d75844402266f3bbc81ada2a';
+String _$educationContentHash() => r'eeedb7ec9fae4493c55a71316c652addba64289a';
 
 /// Async provider for loading educational content
 ///
@@ -185,7 +185,7 @@ final educationContentProvider =
 // ignore: unused_element
 typedef EducationContentRef =
     AutoDisposeFutureProviderRef<List<EducationContent>>;
-String _$marketDataHash() => r'425a513a893773af5678081b0d009f9298ac6be3';
+String _$marketDataHash() => r'f7b6b7f1e01a1b65e0bfce0129d31632eb48230e';
 
 /// Async provider for market data (for future trading features)
 ///
@@ -316,7 +316,7 @@ class _MarketDataProviderElement
   String get symbol => (origin as MarketDataProvider).symbol;
 }
 
-String _$saveUserProgressHash() => r'df2b5fd526aa0e7e36f95817a309ff26a54ffc85';
+String _$saveUserProgressHash() => r'2574414087cd2d8d7b08fa774a4c403dacdccb6d';
 
 /// Async provider for saving user progress (demonstrates error handling)
 ///

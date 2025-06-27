@@ -53,7 +53,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
 
     // Start tutorial after a short delay
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.steps.isNotEmpty) {
+      if (widget.steps.isNotEmpty && _showTutorial) {
         _showTutorialStep();
       }
     });

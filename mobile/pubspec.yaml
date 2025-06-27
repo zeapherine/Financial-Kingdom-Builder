@@ -47,7 +47,11 @@ dependencies:
 
   # UI and utilities
   fl_chart: ^0.69.0
+  
+  # Authentication and security
   local_auth: ^2.3.0
+  shared_preferences: ^2.3.2
+  crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:

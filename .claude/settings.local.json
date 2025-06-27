@@ -46,7 +46,9 @@
       "Bash(mv:*)",
       "Bash(snfoundryup)",
       "Bash($HOME/.local/bin/snforge:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker:*)"
     ],
     "deny": []
   }

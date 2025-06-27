@@ -429,7 +429,7 @@ void main() {
     group('Error Recovery', () {
       test('should maintain state after failed progress update', () {
         notifier.updateModuleProgress('financial-basics', 0.5);
-        final initialState = container.read(mockEducationProvider);
+        // final initialState = container.read(mockEducationProvider); // TODO: Use state for validation
         
         // Try invalid operation
         expect(

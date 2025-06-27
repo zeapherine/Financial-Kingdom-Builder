@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/config/duolingo_theme.dart';
 import '../../../../shared/widgets/duo_card.dart';
 import '../../../../shared/widgets/duo_progress_bar.dart';
