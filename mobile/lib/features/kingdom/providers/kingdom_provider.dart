@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/models/kingdom_state.dart';
 import '../../../core/exceptions/app_exceptions.dart';
@@ -8,8 +10,11 @@ part 'kingdom_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class KingdomNotifier extends _$KingdomNotifier {
+  static const String _storageKey = 'kingdom_state';
+
   @override
   KingdomState build() {
+    _loadKingdomState();
     return const KingdomState();
   }
 
@@ -32,6 +37,9 @@ class KingdomNotifier extends _$KingdomNotifier {
         if (newTier != state.tier) {
           _unlockBuildingsForTier(newTier);
         }
+        
+        // Save state after changes
+        _saveKingdomState();
       },
       fallbackValue: null,
       context: 'KingdomProvider.addExperience',
@@ -152,5 +160,74 @@ class KingdomNotifier extends _$KingdomNotifier {
     }
     
     state = state.copyWith(unlockedBuildings: updatedBuildings);
+  }
+
+  // Persistence methods
+  Future<void> _loadKingdomState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final stateJson = prefs.getString(_storageKey);
+      
+      if (stateJson != null) {
+        final stateMap = json.decode(stateJson) as Map<String, dynamic>;
+        state = _fromJson(stateMap);
+      }
+    } catch (e) {
+      // If loading fails, continue with default state
+      // In production, consider using a proper logging framework
+    }
+  }
+
+  Future<void> _saveKingdomState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final stateJson = json.encode(_toJson(state));
+      await prefs.setString(_storageKey, stateJson);
+    } catch (e) {
+      // Silently ignore save errors
+      // In production, consider using a proper logging framework
+    }
+  }
+
+  Map<String, dynamic> _toJson(KingdomState state) {
+    return {
+      'tier': state.tier.index,
+      'experience': state.experience,
+      'unlockedBuildings': state.unlockedBuildings.map(
+        (building, isUnlocked) => MapEntry(building.index, isUnlocked),
+      ),
+      'buildingLevels': state.buildingLevels.map(
+        (building, level) => MapEntry(building.index, level),
+      ),
+      'resources': state.resources,
+    };
+  }
+
+  KingdomState _fromJson(Map<String, dynamic> json) {
+    final unlockedBuildings = <KingdomBuilding, bool>{};
+    final buildingLevels = <KingdomBuilding, int>{};
+    
+    // Convert building indexes back to enums
+    (json['unlockedBuildings'] as Map<String, dynamic>).forEach((key, value) {
+      final buildingIndex = int.parse(key);
+      if (buildingIndex < KingdomBuilding.values.length) {
+        unlockedBuildings[KingdomBuilding.values[buildingIndex]] = value as bool;
+      }
+    });
+    
+    (json['buildingLevels'] as Map<String, dynamic>).forEach((key, value) {
+      final buildingIndex = int.parse(key);
+      if (buildingIndex < KingdomBuilding.values.length) {
+        buildingLevels[KingdomBuilding.values[buildingIndex]] = value as int;
+      }
+    });
+
+    return KingdomState(
+      tier: KingdomTier.values[json['tier'] as int],
+      experience: json['experience'] as int,
+      unlockedBuildings: unlockedBuildings,
+      buildingLevels: buildingLevels,
+      resources: Map<String, int>.from(json['resources'] as Map),
+    );
   }
 }

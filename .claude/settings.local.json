@@ -48,7 +48,10 @@
       "Bash($HOME/.local/bin/snforge:*)",
       "Bash(npx tsc:*)",
       "Bash(docker-compose up:*)",
-      "Bash(docker:*)"
+      "Bash(docker:*)",
+      "Bash(dart analyze:*)",
+      "Bash(dart:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

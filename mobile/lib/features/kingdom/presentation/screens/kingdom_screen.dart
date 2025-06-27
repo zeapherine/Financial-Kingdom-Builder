@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/config/duolingo_theme.dart';
-import '../../../../shared/widgets/duo_card.dart';
 import '../../../../shared/widgets/gamification_widgets.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 import '../../../../shared/widgets/tutorial_overlay.dart';
 import '../../../../shared/widgets/tutorial_target.dart';
+import '../widgets/kingdom_buildings.dart';
+import '../widgets/additional_buildings.dart';
+import '../../domain/models/kingdom_state.dart';
+import '../../providers/kingdom_provider.dart';
 
 class KingdomScreen extends ConsumerStatefulWidget {
   const KingdomScreen({super.key});
@@ -23,6 +26,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final kingdomState = ref.watch(kingdomNotifierProvider);
     return TutorialOverlay(
       steps: [
         TutorialStep(
@@ -107,7 +111,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
             
             // Title
             Text(
-              'Village Stage',
+              '${kingdomState.tierDisplayName} Stage',
               style: DuolingoTheme.h2.copyWith(
                 color: DuolingoTheme.charcoal,
               ),
@@ -124,44 +128,72 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
             ),
             const SizedBox(height: DuolingoTheme.spacingXl),
             
-            // Buildings Grid
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: DuolingoTheme.spacingMd,
-              mainAxisSpacing: DuolingoTheme.spacingMd,
+            // Kingdom Buildings with Enhanced Visuals - Responsive Grid
+            LayoutBuilder(
+              builder: (context, constraints) {
+                // Responsive column count based on screen width
+                int crossAxisCount = 2;
+                if (constraints.maxWidth > 600) {
+                  crossAxisCount = 3;
+                } else if (constraints.maxWidth < 400) {
+                  crossAxisCount = 2;
+                }
+                
+                return GridView.count(
+                  crossAxisCount: crossAxisCount,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: DuolingoTheme.spacingMd,
+                  mainAxisSpacing: DuolingoTheme.spacingMd,
+                  childAspectRatio: constraints.maxWidth > 600 ? 0.85 : 0.9,
               children: [
+                // Town Center - unlocked at higher levels
+                TownCenterBuilding(
+                  isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.townCenter),
+                  onTap: () {
+                    // TODO: Navigate to kingdom management
+                  },
+                ),
+                
+                // Library - available from start
                 TutorialTarget(
                   tutorialKey: _libraryKey,
-                  child: _KingdomBuilding(
-                    icon: Icons.library_books,
-                    label: 'Library',
-                    description: 'Learn & Study',
-                    isUnlocked: true,
+                  child: LibraryBuilding(
+                    isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.library),
                     onTap: () => context.go('/education'),
                   ),
                 ),
-                _KingdomBuilding(
-                  icon: Icons.store,
-                  label: 'Trading Post',
-                  description: 'Practice Trading',
-                  isUnlocked: false,
+                
+                // Trading Post - unlocked after completing education modules
+                TradingPostBuilding(
+                  isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.tradingPost),
+                  onTap: () => context.go('/trading'),
                 ),
-                _KingdomBuilding(
-                  icon: Icons.account_balance,
-                  label: 'Treasury',
-                  description: 'Manage Portfolio',
-                  isUnlocked: false,
+                
+                // Treasury - unlocked after first trades
+                TreasuryBuilding(
+                  isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.treasury),
+                  onTap: () {
+                    // TODO: Navigate to portfolio management
+                  },
                 ),
-                _KingdomBuilding(
-                  icon: Icons.people,
-                  label: 'Community',
-                  description: 'Connect & Share',
-                  isUnlocked: true,
+                
+                // Marketplace - unlocked at City level for social trading
+                MarketplaceBuilding(
+                  isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.marketplace),
                   onTap: () => context.go('/social'),
                 ),
-              ],
+                
+                // Observatory - unlocked at Kingdom level for advanced analytics
+                ObservatoryBuilding(
+                  isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.observatory),
+                  onTap: () {
+                    // TODO: Navigate to market analysis
+                  },
+                ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -171,54 +203,3 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
   }
 }
 
-class _KingdomBuilding extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String description;
-  final bool isUnlocked;
-  final VoidCallback? onTap;
-
-  const _KingdomBuilding({
-    required this.icon,
-    required this.label,
-    required this.description,
-    required this.isUnlocked,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return DuoCard(
-      type: DuoCardType.lesson,
-      onTap: isUnlocked ? onTap : null,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          LessonNode(
-            icon: icon,
-            isCompleted: false,
-            isLocked: !isUnlocked,
-            onTap: isUnlocked ? onTap : null,
-          ),
-          const SizedBox(height: DuolingoTheme.spacingMd),
-          Text(
-            label,
-            style: DuolingoTheme.bodyMedium.copyWith(
-              fontWeight: FontWeight.w700,
-              color: isUnlocked ? DuolingoTheme.charcoal : DuolingoTheme.mediumGray,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: DuolingoTheme.spacingXs),
-          Text(
-            description,
-            style: DuolingoTheme.bodySmall.copyWith(
-              color: isUnlocked ? DuolingoTheme.darkGray : DuolingoTheme.mediumGray,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
