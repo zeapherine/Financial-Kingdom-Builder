@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/lesson_content.dart';
+import '../data/financial_literacy_modules.dart';
+import '../data/portfolio_concepts_modules.dart';
 
 class EducationModule {
   final String id;
@@ -45,12 +48,14 @@ class EducationState {
   final Map<String, double> moduleProgress;
   final int totalXpEarned;
   final String currentTier;
+  final Map<String, List<LessonContent>> moduleContent;
 
   const EducationState({
     this.modules = const [],
     this.moduleProgress = const {},
     this.totalXpEarned = 0,
     this.currentTier = 'Village',
+    this.moduleContent = const {},
   });
 
   EducationState copyWith({
@@ -58,18 +63,23 @@ class EducationState {
     Map<String, double>? moduleProgress,
     int? totalXpEarned,
     String? currentTier,
+    Map<String, List<LessonContent>>? moduleContent,
   }) {
     return EducationState(
       modules: modules ?? this.modules,
       moduleProgress: moduleProgress ?? this.moduleProgress,
       totalXpEarned: totalXpEarned ?? this.totalXpEarned,
       currentTier: currentTier ?? this.currentTier,
+      moduleContent: moduleContent ?? this.moduleContent,
     );
   }
 }
 
 class EducationNotifier extends StateNotifier<EducationState> {
-  EducationNotifier() : super(EducationState(modules: _getInitialModules()));
+  EducationNotifier() : super(EducationState(
+    modules: _getInitialModules(),
+    moduleContent: _getInitialModuleContent(),
+  ));
 
   static List<EducationModule> _getInitialModules() {
     return [
@@ -105,6 +115,13 @@ class EducationNotifier extends StateNotifier<EducationState> {
         requiredXp: 500,
       ),
     ];
+  }
+
+  static Map<String, List<LessonContent>> _getInitialModuleContent() {
+    return {
+      'financial-basics': FinancialLiteracyModules.getFinancialLiteracyLessons(),
+      'portfolio-management': PortfolioConceptsModules.getPortfolioConceptsLessons(),
+    };
   }
 
   void completeLesson(String moduleId, String lessonId) {
@@ -192,7 +209,14 @@ class EducationNotifier extends StateNotifier<EducationState> {
   }
 
   void resetProgress() {
-    state = EducationState(modules: _getInitialModules());
+    state = EducationState(
+      modules: _getInitialModules(),
+      moduleContent: _getInitialModuleContent(),
+    );
+  }
+
+  List<LessonContent> getLessonsForModule(String moduleId) {
+    return state.moduleContent[moduleId] ?? [];
   }
 }
 

@@ -4,12 +4,16 @@ import '../../../../core/config/duolingo_theme.dart';
 import '../../../../shared/widgets/duo_card.dart';
 import '../../../../shared/widgets/duo_progress_bar.dart';
 import '../../../../shared/widgets/app_drawer.dart';
+import '../../providers/education_provider.dart';
+import 'module_lessons_screen.dart';
 
 class EducationScreen extends ConsumerWidget {
   const EducationScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final educationState = ref.watch(educationProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Financial Education'),
@@ -75,40 +79,19 @@ class EducationScreen extends ConsumerWidget {
             const SizedBox(height: DuolingoTheme.spacingLg),
             
             // Modules List
-            ...[
-              _EducationModule(
-                title: 'Financial Literacy Basics',
-                description: 'Learn the fundamentals of personal finance',
-                icon: Icons.account_balance_wallet,
-                progress: 0.8,
-                isLocked: false,
-                xpReward: 50,
-              ),
-              _EducationModule(
-                title: 'Understanding Risk',
-                description: 'Learn about investment risk and reward',
-                icon: Icons.trending_up,
-                progress: 0.0,
-                isLocked: true,
-                xpReward: 75,
-              ),
-              _EducationModule(
-                title: 'Portfolio Basics',
-                description: 'Introduction to diversification',
-                icon: Icons.pie_chart,
-                progress: 0.0,
-                isLocked: true,
-                xpReward: 100,
-              ),
-              _EducationModule(
-                title: 'Cryptocurrency 101',
-                description: 'Understanding digital assets',
-                icon: Icons.currency_bitcoin,
-                progress: 0.0,
-                isLocked: true,
-                xpReward: 125,
-              ),
-            ],
+            ...educationState.modules.map((module) => _EducationModule(
+              module: module,
+              progress: educationState.moduleProgress[module.id] ?? 0.0,
+              onTap: () {
+                if (!module.isLocked) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ModuleLessonsScreen(module: module),
+                    ),
+                  );
+                }
+              },
+            )),
           ],
         ),
       ),
@@ -117,20 +100,14 @@ class EducationScreen extends ConsumerWidget {
 }
 
 class _EducationModule extends StatelessWidget {
-  final String title;
-  final String description;
-  final IconData icon;
+  final EducationModule module;
   final double progress;
-  final bool isLocked;
-  final int xpReward;
+  final VoidCallback? onTap;
 
   const _EducationModule({
-    required this.title,
-    required this.description,
-    required this.icon,
+    required this.module,
     required this.progress,
-    required this.isLocked,
-    required this.xpReward,
+    this.onTap,
   });
 
   @override
@@ -139,9 +116,7 @@ class _EducationModule extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: DuolingoTheme.spacingMd),
       child: DuoCard(
         type: DuoCardType.lesson,
-        onTap: isLocked ? null : () {
-          // TODO: Navigate to module content
-        },
+        onTap: module.isLocked ? null : onTap,
         child: Row(
           children: [
             // Module Icon
@@ -149,14 +124,14 @@ class _EducationModule extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: isLocked 
+                color: module.isLocked 
                     ? DuolingoTheme.mediumGray 
                     : (progress > 0 ? DuolingoTheme.duoGreen : DuolingoTheme.duoBlue),
                 borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
-                boxShadow: isLocked ? null : DuolingoTheme.cardShadow,
+                boxShadow: module.isLocked ? null : DuolingoTheme.cardShadow,
               ),
               child: Icon(
-                isLocked ? Icons.lock : icon,
+                module.isLocked ? Icons.lock : _getModuleIcon(module.category),
                 color: DuolingoTheme.white,
                 size: DuolingoTheme.iconLarge,
               ),
@@ -172,16 +147,16 @@ class _EducationModule extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          title,
+                          module.title,
                           style: DuolingoTheme.bodyLarge.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: isLocked 
+                            color: module.isLocked 
                                 ? DuolingoTheme.mediumGray 
                                 : DuolingoTheme.charcoal,
                           ),
                         ),
                       ),
-                      if (!isLocked) ...[
+                      if (!module.isLocked) ...[
                         Icon(
                           Icons.star,
                           color: DuolingoTheme.duoYellow,
@@ -189,7 +164,7 @@ class _EducationModule extends StatelessWidget {
                         ),
                         const SizedBox(width: 2),
                         Text(
-                          '+$xpReward XP',
+                          '+${_getXpReward(module.category)} XP',
                           style: DuolingoTheme.caption.copyWith(
                             color: DuolingoTheme.duoYellow,
                             fontWeight: FontWeight.w600,
@@ -200,14 +175,14 @@ class _EducationModule extends StatelessWidget {
                   ),
                   const SizedBox(height: DuolingoTheme.spacingXs),
                   Text(
-                    description,
+                    module.description,
                     style: DuolingoTheme.bodySmall.copyWith(
-                      color: isLocked 
+                      color: module.isLocked 
                           ? DuolingoTheme.mediumGray 
                           : DuolingoTheme.darkGray,
                     ),
                   ),
-                  if (!isLocked) ...[
+                  if (!module.isLocked) ...[
                     const SizedBox(height: DuolingoTheme.spacingMd),
                     DuoProgressBar(
                       progress: progress,
@@ -228,7 +203,7 @@ class _EducationModule extends StatelessWidget {
             // Arrow
             Icon(
               Icons.arrow_forward_ios,
-              color: isLocked 
+              color: module.isLocked 
                   ? DuolingoTheme.mediumGray 
                   : DuolingoTheme.duoGreen,
               size: DuolingoTheme.iconSmall,
@@ -237,5 +212,35 @@ class _EducationModule extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _getModuleIcon(String category) {
+    switch (category) {
+      case 'Financial Literacy':
+        return Icons.account_balance_wallet;
+      case 'Risk Management':
+        return Icons.trending_up;
+      case 'Trading':
+        return Icons.candlestick_chart;
+      case 'Portfolio Management':
+        return Icons.pie_chart;
+      default:
+        return Icons.school;
+    }
+  }
+
+  int _getXpReward(String category) {
+    switch (category) {
+      case 'Financial Literacy':
+        return 50;
+      case 'Risk Management':
+        return 75;
+      case 'Trading':
+        return 100;
+      case 'Portfolio Management':
+        return 125;
+      default:
+        return 25;
+    }
   }
 }
