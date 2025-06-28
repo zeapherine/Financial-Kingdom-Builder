@@ -1,0 +1,236 @@
+{
+  "@@locale": "en",
+  "appTitle": "Financial Kingdom Builder",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "education": "Education",
+  "@education": {
+    "description": "Education section title"
+  },
+  
+  "lessons": "Lessons",
+  "@lessons": {
+    "description": "Lessons section title"
+  },
+  
+  "progress": "Progress",
+  "@progress": {
+    "description": "Progress section title"
+  },
+  
+  "achievements": "Achievements",
+  "@achievements": {
+    "description": "Achievements section title"
+  },
+  
+  "experiencePoints": "Experience Points",
+  "@experiencePoints": {
+    "description": "Experience points label"
+  },
+  
+  "overallProgress": "Overall Progress",
+  "@overallProgress": {
+    "description": "Overall progress label"
+  },
+  
+  "learningPath": "Learning Path",
+  "@learningPath": {
+    "description": "Learning path title"
+  },
+  
+  "currentMilestone": "Current Milestone",
+  "@currentMilestone": {
+    "description": "Current milestone label"
+  },
+  
+  "achievementUnlocked": "Achievement Unlocked!",
+  "@achievementUnlocked": {
+    "description": "Achievement unlock notification"
+  },
+  
+  "startAnimation": "Start Animation",
+  "@startAnimation": {
+    "description": "Start animation button text"
+  },
+  
+  "playing": "Playing...",
+  "@playing": {
+    "description": "Playing animation status"
+  },
+  
+  "reset": "Reset",
+  "@reset": {
+    "description": "Reset button text"
+  },
+  
+  "blockchainProcessVisualization": "Blockchain Process Visualization",
+  "@blockchainProcessVisualization": {
+    "description": "Blockchain visualization title"
+  },
+  
+  "blockStructure": "Block Structure",
+  "@blockStructure": {
+    "description": "Block structure section title"
+  },
+  
+  "financialConstructionPermits": "Financial Construction Permits",
+  "@financialConstructionPermits": {
+    "description": "Construction permits title"
+  },
+  
+  "buildYourFinancialKnowledge": "Build your financial knowledge step by step, just like constructing a building",
+  "@buildYourFinancialKnowledge": {
+    "description": "Construction permits description"
+  },
+  
+  "requirements": "Requirements:",
+  "@requirements": {
+    "description": "Requirements label"
+  },
+  
+  "buildingAnalogy": "Building Analogy:",
+  "@buildingAnalogy": {
+    "description": "Building analogy label"
+  },
+  
+  "unlocks": "Unlocks:",
+  "@unlocks": {
+    "description": "Unlocks label"
+  },
+  
+  "finalBuildingInspection": "Final Building Inspection",
+  "@finalBuildingInspection": {
+    "description": "Final inspection title"
+  },
+  
+  "inspectionScore": "Inspection Score:",
+  "@inspectionScore": {
+    "description": "Inspection score label"
+  },
+  
+  "needToPass": "Need {score} to pass",
+  "@needToPass": {
+    "description": "Passing score requirement",
+    "placeholders": {
+      "score": {
+        "type": "int",
+        "example": "85"
+      }
+    }
+  },
+  
+  "inspectionPassed": "Inspection Passed!",
+  "@inspectionPassed": {
+    "description": "Inspection passed message"
+  },
+  
+  "riskMeter": "Risk Meter",
+  "@riskMeter": {
+    "description": "Risk meter title"
+  },
+  
+  "riskLevel": "Risk Level: {level}",
+  "@riskLevel": {
+    "description": "Risk level display",
+    "placeholders": {
+      "level": {
+        "type": "String",
+        "example": "Moderate"
+      }
+    }
+  },
+  
+  "lowRisk": "Low Risk",
+  "@lowRisk": {
+    "description": "Low risk label"
+  },
+  
+  "moderateRisk": "Moderate Risk", 
+  "@moderateRisk": {
+    "description": "Moderate risk label"
+  },
+  
+  "highRisk": "High Risk",
+  "@highRisk": {
+    "description": "High risk label"
+  },
+  
+  "minutes": "{count} minutes",
+  "@minutes": {
+    "description": "Minutes duration",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  
+  "estimatedTime": "Estimated time: {minutes}",
+  "@estimatedTime": {
+    "description": "Estimated completion time",
+    "placeholders": {
+      "minutes": {
+        "type": "String",
+        "example": "5 minutes"
+      }
+    }
+  },
+  
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Continue button text"
+  },
+  
+  "complete": "Complete",
+  "@complete": {
+    "description": "Complete button text"
+  },
+  
+  "next": "Next",
+  "@next": {
+    "description": "Next button text"
+  },
+  
+  "previous": "Previous",
+  "@previous": {
+    "description": "Previous button text"
+  },
+  
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button text"
+  },
+  
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  
+  "correct": "Correct!",
+  "@correct": {
+    "description": "Correct answer feedback"
+  },
+  
+  "incorrect": "Incorrect",
+  "@incorrect": {
+    "description": "Incorrect answer feedback"
+  },
+  
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading state text"
+  },
+  
+  "error": "Error",
+  "@error": {
+    "description": "Error state text"
+  },
+  
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Try again button text"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Constructeur du Royaume Financier",
+  
+  "education": "Éducation",
+  "lessons": "Leçons",
+  "progress": "Progrès",
+  "achievements": "Réalisations",
+  "experiencePoints": "Points d'Expérience",
+  "overallProgress": "Progrès Global",
+  "learningPath": "Parcours d'Apprentissage",
+  "currentMilestone": "Étape Actuelle",
+  "achievementUnlocked": "Réalisation Débloquée !",
+  
+  "startAnimation": "Démarrer l'Animation",
+  "playing": "En cours...",
+  "reset": "Réinitialiser",
+  
+  "blockchainProcessVisualization": "Visualisation du Processus Blockchain",
+  "blockStructure": "Structure du Bloc",
+  
+  "financialConstructionPermits": "Permis de Construction Financière",
+  "buildYourFinancialKnowledge": "Construisez vos connaissances financières étape par étape, comme construire un bâtiment",
+  
+  "requirements": "Exigences :",
+  "buildingAnalogy": "Analogie de Construction :",
+  "unlocks": "Débloque :",
+  
+  "finalBuildingInspection": "Inspection Finale du Bâtiment",
+  "inspectionScore": "Score d'Inspection :",
+  "needToPass": "Besoin de {score} pour réussir",
+  "inspectionPassed": "Inspection Réussie !",
+  
+  "riskMeter": "Indicateur de Risque",
+  "riskLevel": "Niveau de Risque : {level}",
+  "lowRisk": "Risque Faible",
+  "moderateRisk": "Risque Modéré",
+  "highRisk": "Risque Élevé",
+  
+  "minutes": "{count} minutes",
+  "estimatedTime": "Temps estimé : {minutes}",
+  
+  "continueButton": "Continuer",
+  "complete": "Terminer",
+  "next": "Suivant",
+  "previous": "Précédent",
+  "skip": "Passer",
+  "retry": "Réessayer",
+  
+  "correct": "Correct !",
+  "incorrect": "Incorrect",
+  
+  "loading": "Chargement...",
+  "error": "Erreur",
+  "tryAgain": "Réessayer"
+}
