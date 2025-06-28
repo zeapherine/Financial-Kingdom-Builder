@@ -2,14 +2,15 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "baseUrl": "./",
     "paths": {
       "@financial-kingdom/shared": ["../shared/src"],
       "@financial-kingdom/shared/*": ["../shared/src/*"]
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "../shared/src/**/*"
   ],
   "exclude": [
     "node_modules",

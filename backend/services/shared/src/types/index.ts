@@ -89,13 +89,53 @@ export interface EducationModule {
   xpReward: number;
   prerequisites: string[];
   content: ModuleContent[];
+  version: number;
+  status: 'draft' | 'published' | 'archived';
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: string;
+  publishedAt?: Date;
+  scheduledAt?: Date;
+  tags: string[];
+  analytics: ModuleAnalytics;
 }
 
 export interface ModuleContent {
-  type: 'text' | 'video' | 'quiz' | 'interactive';
+  id: string;
+  type: 'text' | 'video' | 'quiz' | 'interactive' | 'image';
   title: string;
   content: string;
   duration?: number;
+  order: number;
+  metadata?: ContentMetadata;
+}
+
+export interface ContentMetadata {
+  videoUrl?: string;
+  imageUrl?: string;
+  altText?: string;
+  thumbnailUrl?: string;
+  fileSize?: number;
+  mimeType?: string;
+  quizConfig?: QuizConfig;
+}
+
+export interface QuizConfig {
+  questions: QuizQuestion[];
+  passingScore: number;
+  timeLimit?: number; // minutes
+  allowRetry: boolean;
+  maxAttempts: number;
+}
+
+export interface QuizQuestion {
+  id: string;
+  type: 'multiple-choice' | 'true-false' | 'fill-blank' | 'drag-drop';
+  question: string;
+  options?: string[];
+  correctAnswer: string | string[];
+  explanation: string;
+  points: number;
 }
 
 export interface UserProgress {
@@ -104,7 +144,101 @@ export interface UserProgress {
   progress: number; // 0-100
   completed: boolean;
   lastAccessed: Date;
-  quizScores: number[];
+  startedAt: Date;
+  completedAt?: Date;
+  quizAttempts: QuizAttempt[];
+  timeSpent: number; // minutes
+  contentProgress: ContentProgress[];
+}
+
+export interface QuizAttempt {
+  id: string;
+  attemptNumber: number;
+  score: number;
+  maxScore: number;
+  passed: boolean;
+  answers: QuizAnswer[];
+  startedAt: Date;
+  completedAt: Date;
+  timeSpent: number;
+}
+
+export interface QuizAnswer {
+  questionId: string;
+  answer: string | string[];
+  isCorrect: boolean;
+  points: number;
+}
+
+export interface ContentProgress {
+  contentId: string;
+  completed: boolean;
+  timeSpent: number;
+  lastAccessed: Date;
+}
+
+export interface ModuleAnalytics {
+  totalViews: number;
+  completionRate: number;
+  averageScore: number;
+  averageTimeSpent: number;
+  retryRate: number;
+  dropOffPoints: DropOffPoint[];
+  lastUpdated: Date;
+}
+
+export interface DropOffPoint {
+  contentId: string;
+  dropOffRate: number;
+  averageTimeBeforeDropOff: number;
+}
+
+export interface EducationCategory {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  order: number;
+  parentId?: string;
+  isActive: boolean;
+}
+
+export interface ContentVersion {
+  id: string;
+  moduleId: string;
+  version: number;
+  changes: string[];
+  createdBy: string;
+  createdAt: Date;
+  content: ModuleContent[];
+}
+
+export interface ABTestConfig {
+  id: string;
+  name: string;
+  description: string;
+  moduleId: string;
+  variants: ABTestVariant[];
+  trafficSplit: number; // percentage
+  startDate: Date;
+  endDate?: Date;
+  status: 'draft' | 'running' | 'completed' | 'paused';
+  metrics: ABTestMetrics;
+}
+
+export interface ABTestVariant {
+  id: string;
+  name: string;
+  content: ModuleContent[];
+  trafficPercentage: number;
+}
+
+export interface ABTestMetrics {
+  totalParticipants: number;
+  completionRates: Record<string, number>; // variantId -> completion rate
+  averageScores: Record<string, number>;
+  conversionRates: Record<string, number>;
 }
 
 // Social Types

@@ -10,6 +10,9 @@ import { validateAuth } from './middleware/auth';
 import { healthRouter } from './routes/health';
 import { modulesRouter } from './routes/modules';
 import { progressRouter } from './routes/progress';
+import { categoriesRouter } from './routes/categories';
+import { quizRouter } from './routes/quiz';
+import { analyticsRouter } from './routes/analytics';
 import { AppError } from './utils/app-error';
 
 dotenv.config();
@@ -33,6 +36,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/health', healthRouter);
 app.use('/modules', validateAuth, modulesRouter);
 app.use('/progress', validateAuth, progressRouter);
+app.use('/categories', validateAuth, categoriesRouter);
+app.use('/quiz', validateAuth, quizRouter);
+app.use('/analytics', validateAuth, analyticsRouter);
 
 app.get('/', (req, res) => {
   res.json({

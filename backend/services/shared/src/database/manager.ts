@@ -19,6 +19,7 @@ export interface DatabaseHealthStatus {
 export class DatabaseManager {
   private connections: DatabaseConnections | null = null;
   private isInitialized: boolean = false;
+  private static instance: DatabaseManager | null = null;
 
   constructor() {
     // Bind methods to preserve context
@@ -26,6 +27,19 @@ export class DatabaseManager {
     this.getConnections = this.getConnections.bind(this);
     this.healthCheck = this.healthCheck.bind(this);
     this.close = this.close.bind(this);
+  }
+
+  public static getInstance(): DatabaseManager {
+    if (!DatabaseManager.instance) {
+      DatabaseManager.instance = new DatabaseManager();
+    }
+    return DatabaseManager.instance;
+  }
+
+  // Convenience method for direct PostgreSQL queries
+  public async query(text: string, params?: any[]): Promise<any> {
+    const postgres = this.getPostgres();
+    return postgres.query(text, params);
   }
 
   public async initialize(): Promise<DatabaseConnections> {
