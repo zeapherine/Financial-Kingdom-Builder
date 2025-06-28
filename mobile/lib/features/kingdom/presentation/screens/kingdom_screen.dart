@@ -28,7 +28,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final kingdomState = ref.watch(kingdomNotifierProvider);
+    final kingdomState = ref.watch(kingdomProvider);
     return TutorialOverlay(
       steps: [
         TutorialStep(

@@ -1,9 +1,4 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import '../../../core/exceptions/app_exceptions.dart';
-import '../../../core/services/error_handler_service.dart';
-
-part 'education_provider.g.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EducationModule {
   final String id;
@@ -73,16 +68,10 @@ class EducationState {
   }
 }
 
-@Riverpod(keepAlive: true)
-class EducationNotifier extends _$EducationNotifier {
-  @override
-  EducationState build() {
-    return EducationState(
-      modules: _getInitialModules(),
-    );
-  }
+class EducationNotifier extends StateNotifier<EducationState> {
+  EducationNotifier() : super(EducationState(modules: _getInitialModules()));
 
-  List<EducationModule> _getInitialModules() {
+  static List<EducationModule> _getInitialModules() {
     return [
       const EducationModule(
         id: 'financial-basics',
@@ -100,134 +89,137 @@ class EducationNotifier extends _$EducationNotifier {
         requiredXp: 100,
       ),
       const EducationModule(
-        id: 'portfolio-basics',
-        title: 'Portfolio Basics',
-        description: 'Introduction to diversification',
-        category: 'Portfolio Management',
+        id: 'trading-basics',
+        title: 'Trading Fundamentals',
+        description: 'Basic trading concepts and strategies',
+        category: 'Trading',
         isLocked: true,
-        requiredXp: 250,
+        requiredXp: 200,
       ),
       const EducationModule(
-        id: 'crypto-101',
-        title: 'Cryptocurrency 101',
-        description: 'Understanding digital assets',
-        category: 'Cryptocurrency',
+        id: 'portfolio-management',
+        title: 'Portfolio Management',
+        description: 'Learn to build and manage investment portfolios',
+        category: 'Portfolio Management',
         isLocked: true,
-        requiredXp: 400,
+        requiredXp: 500,
       ),
     ];
   }
 
-  void updateModuleProgress(String moduleId, double progress) {
-    ErrorHandlerService.safeExecute(
-      () {
-        // Validate inputs
-        if (progress < 0.0 || progress > 1.0) {
-          throw EducationException(
-            'Invalid progress value: $progress. Progress must be between 0.0 and 1.0',
-            code: 'INVALID_PROGRESS_VALUE',
-          );
-        }
-        
-        // Check if module exists
-        final moduleExists = state.modules.any((module) => module.id == moduleId);
-        if (!moduleExists) {
-          throw AppExceptions.moduleNotFound(moduleId);
-        }
-        
-        // Check if module is locked
-        final module = state.modules.firstWhere((m) => m.id == moduleId);
-        if (module.isLocked) {
-          throw EducationException(
-            'Cannot update progress for locked module: $moduleId',
-            code: 'MODULE_LOCKED',
-          );
-        }
-        
-        // Check if module is already completed
-        final currentProgress = state.moduleProgress[moduleId] ?? 0.0;
-        if (currentProgress >= 1.0 && progress >= 1.0) {
-          throw AppExceptions.moduleAlreadyCompleted(moduleId);
-        }
-        
-        final updatedProgress = Map<String, double>.from(state.moduleProgress);
-        updatedProgress[moduleId] = progress;
-        
-        state = state.copyWith(moduleProgress: updatedProgress);
-        
-        // Award XP for progress
-        if (progress >= 1.0 && currentProgress < 1.0) {
-          _awardXpForCompletion(moduleId);
-        }
+  void completeLesson(String moduleId, String lessonId) {
+    final currentState = state;
+    final moduleIndex = currentState.modules.indexWhere((m) => m.id == moduleId);
+    
+    if (moduleIndex == -1) return;
+
+    final module = currentState.modules[moduleIndex];
+    final newProgress = (module.progress + 0.1).clamp(0.0, 1.0);
+    
+    final updatedModules = [...currentState.modules];
+    updatedModules[moduleIndex] = module.copyWith(progress: newProgress);
+    
+    // Award XP for lesson completion
+    final xpGained = 50;
+    final newTotalXp = currentState.totalXpEarned + xpGained;
+    
+    state = currentState.copyWith(
+      modules: updatedModules,
+      totalXpEarned: newTotalXp,
+      moduleProgress: {
+        ...currentState.moduleProgress,
+        moduleId: newProgress,
       },
-      fallbackValue: null,
-      context: 'EducationProvider.updateModuleProgress',
     );
+    
+    // Check if we should unlock new modules
+    _checkUnlockModules();
   }
 
-  void _awardXpForCompletion(String moduleId) {
-    try {
-      const xpPerModule = 50;
-      final newTotalXp = state.totalXpEarned + xpPerModule;
-      
-      if (newTotalXp < 0) {
-        throw AppExceptions.invalidXPValue(newTotalXp);
-      }
-      
-      state = state.copyWith(
-        totalXpEarned: newTotalXp,
-      );
-      
-      // Check if any modules should be unlocked
-      _checkAndUnlockModules();
-    } catch (e) {
-      ErrorHandlerService.handleException(
-        e is Exception ? e : Exception('XP award failed: $e'),
-        context: 'EducationProvider._awardXpForCompletion',
-      );
-    }
-  }
-
-  void _checkAndUnlockModules() {
-    final updatedModules = state.modules.map((module) {
-      if (module.isLocked && state.totalXpEarned >= module.requiredXp) {
+  void _checkUnlockModules() {
+    final currentState = state;
+    final updatedModules = currentState.modules.map((module) {
+      if (module.isLocked && currentState.totalXpEarned >= module.requiredXp) {
         return module.copyWith(isLocked: false);
       }
       return module;
     }).toList();
     
-    state = state.copyWith(modules: updatedModules);
+    state = currentState.copyWith(modules: updatedModules);
   }
 
-  void unlockModule(String moduleId) {
-    ErrorHandlerService.safeExecute(
-      () {
-        // Check if module exists
-        final moduleExists = state.modules.any((module) => module.id == moduleId);
-        if (!moduleExists) {
-          throw AppExceptions.moduleNotFound(moduleId);
-        }
-        
-        // Check if module is already unlocked
-        final module = state.modules.firstWhere((m) => m.id == moduleId);
-        if (!module.isLocked) {
-          throw EducationException(
-            'Module $moduleId is already unlocked',
-            code: 'MODULE_ALREADY_UNLOCKED',
-          );
-        }
-        
-        final updatedModules = state.modules.map((module) {
-          if (module.id == moduleId) {
-            return module.copyWith(isLocked: false);
-          }
-          return module;
-        }).toList();
-        
-        state = state.copyWith(modules: updatedModules);
+  void updateProgress(String moduleId, double progress) {
+    final currentState = state;
+    final moduleIndex = currentState.modules.indexWhere((m) => m.id == moduleId);
+    
+    if (moduleIndex == -1) return;
+
+    final updatedModules = [...currentState.modules];
+    updatedModules[moduleIndex] = updatedModules[moduleIndex].copyWith(progress: progress);
+    
+    state = currentState.copyWith(
+      modules: updatedModules,
+      moduleProgress: {
+        ...currentState.moduleProgress,
+        moduleId: progress,
       },
-      fallbackValue: null,
-      context: 'EducationProvider.unlockModule',
     );
   }
+
+  Future<void> loadUserProgress(String userId) async {
+    // Simulate loading user progress from API
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    // Mock data for demonstration
+    final mockProgress = {
+      'financial-basics': 0.6,
+      'risk-basics': 0.3,
+    };
+    
+    final currentState = state;
+    final updatedModules = currentState.modules.map((module) {
+      final progress = mockProgress[module.id] ?? 0.0;
+      return module.copyWith(progress: progress);
+    }).toList();
+    
+    state = currentState.copyWith(
+      modules: updatedModules,
+      moduleProgress: mockProgress,
+      totalXpEarned: 250, // Mock total XP
+    );
+    
+    _checkUnlockModules();
+  }
+
+  void resetProgress() {
+    state = EducationState(modules: _getInitialModules());
+  }
 }
+
+// Providers
+final educationProvider = StateNotifierProvider<EducationNotifier, EducationState>((ref) {
+  return EducationNotifier();
+});
+
+// Computed providers
+final availableModulesProvider = Provider<List<EducationModule>>((ref) {
+  final educationState = ref.watch(educationProvider);
+  return educationState.modules.where((module) => !module.isLocked).toList();
+});
+
+final completedModulesProvider = Provider<List<EducationModule>>((ref) {
+  final educationState = ref.watch(educationProvider);
+  return educationState.modules.where((module) => module.progress >= 1.0).toList();
+});
+
+final overallProgressProvider = Provider<double>((ref) {
+  final educationState = ref.watch(educationProvider);
+  if (educationState.modules.isEmpty) return 0.0;
+  
+  final totalProgress = educationState.modules.fold<double>(
+    0.0,
+    (sum, module) => sum + module.progress,
+  );
+  
+  return totalProgress / educationState.modules.length;
+});

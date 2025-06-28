@@ -1,6 +1,4 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'app_state_provider.g.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum AppThemeMode {
   light,
@@ -36,12 +34,8 @@ class AppState {
   }
 }
 
-@Riverpod(keepAlive: true)
-class AppStateNotifier extends _$AppStateNotifier {
-  @override
-  AppState build() {
-    return const AppState();
-  }
+class AppStateNotifier extends StateNotifier<AppState> {
+  AppStateNotifier() : super(const AppState());
 
   void setThemeMode(AppThemeMode mode) {
     state = state.copyWith(themeMode: mode);
@@ -57,4 +51,29 @@ class AppStateNotifier extends _$AppStateNotifier {
   void setBottomNavIndex(int index) {
     state = state.copyWith(selectedBottomNavIndex: index);
   }
+
+  void logout() {
+    state = state.copyWith(
+      isAuthenticated: false,
+      userId: null,
+    );
+  }
 }
+
+// Provider definition
+final appStateProvider = StateNotifierProvider<AppStateNotifier, AppState>((ref) {
+  return AppStateNotifier();
+});
+
+// Computed providers
+final isAuthenticatedProvider = Provider<bool>((ref) {
+  return ref.watch(appStateProvider).isAuthenticated;
+});
+
+final currentThemeProvider = Provider<AppThemeMode>((ref) {
+  return ref.watch(appStateProvider).themeMode;
+});
+
+final currentUserIdProvider = Provider<String?>((ref) {
+  return ref.watch(appStateProvider).userId;
+});

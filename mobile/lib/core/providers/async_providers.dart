@@ -1,14 +1,10 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/error_handler_service.dart';
 import '../exceptions/app_exceptions.dart';
 
-part 'async_providers.g.dart';
-
 /// Example async provider demonstrating AsyncValue patterns
 /// This serves as a template for future API integrations
-@riverpod
-Future<UserProfile> userProfile(Ref ref, String userId) async {
+final userProfileProvider = FutureProvider.family<UserProfile, String>((ref, userId) async {
   return await ErrorHandlerService.safeExecuteAsync(
     () async {
       // Simulate API call delay
@@ -35,11 +31,10 @@ Future<UserProfile> userProfile(Ref ref, String userId) async {
     fallbackValue: UserProfile.empty(),
     context: 'AsyncProviders.userProfile',
   );
-}
+});
 
 /// Async provider for loading educational content
-@riverpod
-Future<List<EducationContent>> educationContent(Ref ref) async {
+final educationContentProvider = FutureProvider<List<EducationContent>>((ref) async {
   return await ErrorHandlerService.safeExecuteAsync(
     () async {
       // Simulate API call
@@ -65,11 +60,10 @@ Future<List<EducationContent>> educationContent(Ref ref) async {
     fallbackValue: <EducationContent>[],
     context: 'AsyncProviders.educationContent',
   );
-}
+});
 
 /// Async provider for market data (for future trading features)
-@riverpod
-Future<MarketData> marketData(Ref ref, String symbol) async {
+final marketDataProvider = FutureProvider.family<MarketData, String>((ref, symbol) async {
   return await ErrorHandlerService.safeExecuteAsync(
     () async {
       // Simulate API call to market data provider
@@ -95,11 +89,10 @@ Future<MarketData> marketData(Ref ref, String symbol) async {
     fallbackValue: MarketData.empty(),
     context: 'AsyncProviders.marketData',
   );
-}
+});
 
 /// Async provider for saving user progress (demonstrates error handling)
-@riverpod
-Future<bool> saveUserProgress(Ref ref, UserProgressData data) async {
+final saveUserProgressProvider = FutureProvider.family<bool, UserProgressData>((ref, data) async {
   return await ErrorHandlerService.safeExecuteAsync(
     () async {
       // Simulate save operation
@@ -128,7 +121,7 @@ Future<bool> saveUserProgress(Ref ref, UserProgressData data) async {
     fallbackValue: false,
     context: 'AsyncProviders.saveUserProgress',
   );
-}
+});
 
 /// Model classes for async provider examples
 
