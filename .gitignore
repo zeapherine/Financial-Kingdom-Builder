@@ -98,3 +98,8 @@ mobile/ios/Flutter/flutter_export_environment.sh
 # Backend services specific
 backend/services/*/node_modules/
 backend/services/*/dist/
+
+# Images and media files
+images/
+*/images/
+**/images/

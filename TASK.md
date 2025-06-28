@@ -187,19 +187,19 @@
 - [x] Rollback prevention (can't lose tier progress)
 **Status**: Completed
 
-#### GAME-003: **2025-06-25** Kingdom Resource Management
+#### GAME-003: **2025-06-28** Kingdom Resource Management
 **Description**: Risk allocation represented as kingdom resource distribution
 **Priority**: Medium | **Effort**: Medium | **Dependencies**: UI-001, GAME-001
 **Acceptance Criteria**:
-- [ ] Resource types (Gold = Capital, Gems = High Risk, Wood = Stable Assets)
-- [ ] Resource allocation interface
-- [ ] Visual representation of resource distribution
-- [ ] Risk/reward visualization through resource management
-- [ ] Resource regeneration based on trading performance
-- [ ] Resource scarcity mechanics for risk awareness
-- [ ] Resource conversion system (risk rebalancing)
-- [ ] Resource history and analytics
-**Status**: Pending
+- [x] Resource types (Gold = Capital, Gems = High Risk, Wood = Stable Assets)
+- [x] Resource allocation interface with slider controls and real-time updates
+- [x] Visual representation of resource distribution using custom pie chart
+- [x] Risk/reward visualization through resource management UI
+- [x] Resource regeneration system based on trading performance
+- [x] Resource scarcity mechanics for risk awareness education
+- [x] Resource conversion system for risk rebalancing
+- [x] Resource history and analytics dashboard
+**Status**: Completed
 
 ### 1.4 EDUCATIONAL SYSTEM FOUNDATION
 
@@ -795,11 +795,132 @@ Each task must meet these requirements before being marked complete:
   - [ ] Test basic UI interactions (taps, navigation)
   - [ ] Confirm kingdom-themed UI displays correctly
 
+### Integration Gaps (Discovered 2025-06-28)
+*Features that are implemented but not properly connected or accessible*
+
+**INTEGRATION-001: Resource Management Screen Navigation**
+- **Description**: ResourceManagementScreen with pie chart is fully implemented but not accessible via navigation
+- **Related Task**: GAME-003 (Kingdom Resource Management - Completed)
+- **Priority**: High | **Status**: Pending
+- **Acceptance Criteria**:
+  - [ ] Add `/kingdom/treasury` route to app_router.dart for ResourceManagementScreen
+  - [ ] Update Treasury building onTap in kingdom_screen.dart to navigate to resource management
+  - [ ] Verify pie chart displays correctly when accessed via Treasury building
+  - [ ] Test all three tabs (Overview, Allocate, Analytics) in ResourceManagementScreen
+
+**INTEGRATION-002: Kingdom Building Navigation System**
+- **Description**: All kingdom buildings have placeholder print statements instead of actual navigation
+- **Related Tasks**: UI-001 (Kingdom Visual Framework - Completed), UI-002 (Kingdom Progression - Completed)
+- **Priority**: High | **Status**: Pending
+- **Affected Buildings**: Town Center, Library, Trading Post, Marketplace, Observatory
+- **Acceptance Criteria**:
+  - [ ] Create/identify target screens for each kingdom building
+  - [ ] Add proper navigation routes for all buildings
+  - [ ] Replace all `print('Building tapped')` with actual navigation
+  - [ ] Ensure building unlock states properly gate navigation access
+  - [ ] Add loading states for navigation transitions
+
+**INTEGRATION-003: Educational Content System Connection**
+- **Description**: Education service backend exists but no connection to frontend education screen
+- **Related Tasks**: INFRA-003 (Backend Services - Completed), EDU-001 (Content Management - Pending)
+- **Priority**: High | **Status**: Pending
+- **Acceptance Criteria**:
+  - [ ] Connect EducationScreen to education service API endpoints
+  - [ ] Implement API calls for module fetching and progress tracking
+  - [ ] Add error handling for network requests
+  - [ ] Integrate with authentication system
+  - [ ] Test module completion workflow end-to-end
+
+**INTEGRATION-004: Gamification System Backend Integration**
+- **Description**: XP and Achievement widgets exist but need backend persistence
+- **Related Tasks**: GAME-001 (XP & Achievement System - Completed), INFRA-003 (Backend Services - Completed)
+- **Priority**: Medium | **Status**: Pending
+- **Acceptance Criteria**:
+  - [ ] Connect XPBadge and achievement widgets to gamification service
+  - [ ] Implement real-time XP updates from backend
+  - [ ] Add achievement unlock notifications
+  - [ ] Sync local state with backend on app launch
+  - [ ] Handle offline/online state transitions
+
+**INTEGRATION-005: Trading System Backend Connection**
+- **Description**: Trading screen exists but needs connection to trading service and market data
+- **Related Tasks**: TRADE-001 (Virtual Trading Engine - Pending), INFRA-003 (Backend Services - Completed)
+- **Priority**: Medium | **Status**: Pending
+- **Dependencies**: TRADE-001, TRADE-002 completion
+- **Acceptance Criteria**:
+  - [ ] Connect TradingScreen to trading service endpoints
+  - [ ] Implement real-time market data integration
+  - [ ] Add portfolio management API integration
+  - [ ] Connect paper trading functionality
+  - [ ] Add proper error handling and loading states
+
+**INTEGRATION-006: Social Features Backend Integration**
+- **Description**: Social screen and components exist but need backend connectivity
+- **Related Tasks**: SOCIAL-001 (Community System - Pending), INFRA-003 (Backend Services - Completed)
+- **Priority**: Low | **Status**: Pending
+- **Dependencies**: SOCIAL-001 completion
+- **Acceptance Criteria**:
+  - [ ] Connect SocialScreen to social service endpoints
+  - [ ] Implement user profile and friends system integration
+  - [ ] Add messaging system backend connectivity
+  - [ ] Integrate leaderboard with real data
+  - [ ] Add proper authentication and authorization
+
+**INTEGRATION-007: Tier Progression System Integration**
+- **Description**: Visual tier progression exists but needs backend validation and persistence
+- **Related Tasks**: GAME-002 (Educational Tier Progression - Completed), EDU-001 (Content Management - Pending)
+- **Priority**: High | **Status**: Pending
+- **Dependencies**: EDU-001 completion
+- **Acceptance Criteria**:
+  - [ ] Connect tier progression to backend validation
+  - [ ] Implement educational milestone tracking
+  - [ ] Add trading competency verification
+  - [ ] Sync tier progression across devices
+  - [ ] Add tier upgrade ceremonies with backend events
+
+**INTEGRATION-008: Authentication System Complete Integration**
+- **Description**: Auth scaffolding exists but needs full integration with all features
+- **Related Tasks**: INFRA-005 (Authentication & Security - Completed)
+- **Priority**: High | **Status**: Pending
+- **Acceptance Criteria**:
+  - [ ] Integrate JWT token management across all API calls
+  - [ ] Add biometric authentication to app launch
+  - [ ] Implement session management with auto-refresh
+  - [ ] Add proper logout functionality across all screens
+  - [ ] Test authentication flow end-to-end with all services
+
 ### Future Enhancements
 *Additional tasks discovered while working on other features will be listed here*
 
 ### Technical Debt
 *Items that need refactoring or improvement will be tracked here*
 
+**DEBT-001: Navigation Architecture Consistency**
+- **Description**: Mix of go_router and manual navigation patterns across the app
+- **Priority**: Medium | **Status**: Pending
+- **Acceptance Criteria**:
+  - [ ] Standardize all navigation to use go_router
+  - [ ] Remove any Navigator.push calls in favor of context.go()
+  - [ ] Add proper route guards for authenticated routes
+  - [ ] Implement deep linking support
+
+**DEBT-002: Error Handling Standardization**
+- **Description**: Inconsistent error handling patterns across services and UI
+- **Priority**: Medium | **Status**: Pending
+- **Acceptance Criteria**:
+  - [ ] Create unified error handling system
+  - [ ] Add proper error boundaries for Flutter widgets
+  - [ ] Standardize API error response handling
+  - [ ] Implement user-friendly error messages
+
 ### Documentation Updates
 *Documentation that needs to be created or updated*
+
+**DOC-001: Integration Guide**
+- **Description**: Create documentation for connecting frontend and backend components
+- **Priority**: Low | **Status**: Pending
+- **Acceptance Criteria**:
+  - [ ] Document API integration patterns
+  - [ ] Add navigation setup guide
+  - [ ] Create testing guide for integrated features
+  - [ ] Add troubleshooting section
