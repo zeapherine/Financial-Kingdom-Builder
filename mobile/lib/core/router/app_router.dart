@@ -10,41 +10,49 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
-import '../../shared/presentation/screens/home_screen.dart';
+import '../../shared/presentation/widgets/navigation_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/kingdom',
     routes: [
-      GoRoute(
-        path: '/',
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
+      // Shell route with persistent bottom navigation for main app screens
+      ShellRoute(
+        builder: (context, state, child) {
+          return NavigationShell(
+            currentLocation: state.uri.toString(),
+            child: child,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: '/kingdom',
+            name: 'kingdom',
+            builder: (context, state) => const KingdomScreen(),
+          ),
+          GoRoute(
+            path: '/education',
+            name: 'education',
+            builder: (context, state) => const EducationScreen(),
+          ),
+          GoRoute(
+            path: '/trading',
+            name: 'trading',
+            builder: (context, state) => const TradingScreen(),
+          ),
+          GoRoute(
+            path: '/social',
+            name: 'social',
+            builder: (context, state) => const SocialScreen(),
+          ),
+        ],
       ),
+      
+      // Standalone routes without bottom navigation
       GoRoute(
         path: '/login',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/kingdom',
-        name: 'kingdom',
-        builder: (context, state) => const KingdomScreen(),
-      ),
-      GoRoute(
-        path: '/education',
-        name: 'education',
-        builder: (context, state) => const EducationScreen(),
-      ),
-      GoRoute(
-        path: '/trading',
-        name: 'trading',
-        builder: (context, state) => const TradingScreen(),
-      ),
-      GoRoute(
-        path: '/social',
-        name: 'social',
-        builder: (context, state) => const SocialScreen(),
       ),
       GoRoute(
         path: '/settings',

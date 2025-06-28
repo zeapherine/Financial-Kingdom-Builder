@@ -354,7 +354,6 @@ class _BuildingExpansionAnimationState extends State<BuildingExpansionAnimation>
   late AnimationController _expansionController;
   late Animation<double> _widthAnimation;
   late Animation<double> _heightAnimation;
-  late Animation<double> _opacityAnimation;
 
   @override
   void initState() {
