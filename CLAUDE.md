@@ -111,6 +111,11 @@ This project uses Model Context Protocol (MCP) servers to extend Claude Code cap
   - Requirements: Node.js
   - Usage: Provides Cairo language support, StarkNet contract templates, and blockchain development guidance
 
+- **Context7** (`context7`): Multi-language development assistance including Flutter
+  - Command: `npx -y @upstash/context7-mcp`
+  - Requirements: Node.js ≥ v18.0.0
+  - Usage: Provides Flutter/Dart code assistance, widget templates, state management patterns, and development best practices for multiple languages
+
 #### MCP Server Management
 - **List servers**: `claude mcp list`
 - **Add server**: `claude mcp add <name> <command> [args...]`
@@ -127,6 +132,7 @@ This project uses Model Context Protocol (MCP) servers to extend Claude Code cap
 #### MCP Servers
 - Brave Search: For web search capabilities
 - Cairo Coder: For StarkNet smart contract development
+- Context7: For multi-language development assistance including Flutter best practices
 
 ### 🧠 AI Behavior Rules (ENFORCEMENT)
 

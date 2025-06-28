@@ -51,7 +51,14 @@
       "Bash(docker:*)",
       "Bash(dart analyze:*)",
       "Bash(dart:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(claude mcp add context7-flutter npx @context7/flutter-mcp)",
+      "Bash(claude mcp get:*)",
+      "WebFetch(domain:context7.com)",
+      "Bash(claude mcp:*)",
+      "Bash(npx:*)",
+      "Bash(grep:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }
