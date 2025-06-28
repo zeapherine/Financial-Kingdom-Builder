@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import '../../../../core/config/duolingo_theme.dart';
-import '../../../../shared/widgets/duo_card.dart';
 import '../../domain/models/kingdom_state.dart';
 
 /// Kingdom Progression Visual System
@@ -78,64 +77,71 @@ class _KingdomProgressionBuilderState extends State<KingdomProgressionBuilder>
         builder: (context, child) {
           return Transform.scale(
             scale: _scaleAnimation.value,
-            child: DuoCard(
-              type: DuoCardType.lesson,
+            child: Container(
+              decoration: BoxDecoration(
+                color: DuolingoTheme.white,
+                borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
+                boxShadow: DuolingoTheme.cardShadow,
+              ),
+              padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Building visual representation with tier progression
-                  RepaintBoundary(
-                    child: SizedBox(
-                      width: 100,
-                      height: 80,
-                      child: CustomPaint(
-                        painter: _getProgressionPainter(),
-                      ),
-                    ),
+                  Expanded(
+                    flex: 3,
+                    child: _getBuildingIcon(),
                   ),
-                  const SizedBox(height: DuolingoTheme.spacingMd),
+                  const SizedBox(height: DuolingoTheme.spacingSm),
                   
                   // Building name with tier indication
-                  Text(
-                    _getBuildingName(),
-                    style: DuolingoTheme.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: widget.isUnlocked 
-                          ? DuolingoTheme.charcoal 
-                          : DuolingoTheme.mediumGray,
+                  Flexible(
+                    child: Text(
+                      _getBuildingName(),
+                      style: DuolingoTheme.bodySmall.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: widget.isUnlocked 
+                            ? DuolingoTheme.charcoal 
+                            : DuolingoTheme.mediumGray,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: DuolingoTheme.spacingXs),
+                  const SizedBox(height: 2),
                   
-                  // Tier-specific subtitle
+                  // Unlock status
                   Text(
-                    _getTierSpecificSubtitle(),
-                    style: DuolingoTheme.bodySmall.copyWith(
+                    widget.isUnlocked ? 'Unlocked' : 'Locked',
+                    style: DuolingoTheme.caption.copyWith(
                       color: widget.isUnlocked 
                           ? DuolingoTheme.darkGray 
                           : DuolingoTheme.mediumGray,
+                      fontSize: 10,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   
                   // Level indicator if building level > 1
                   if (widget.buildingLevel > 1) ...[
-                    const SizedBox(height: DuolingoTheme.spacingXs),
+                    const SizedBox(height: 2),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: DuolingoTheme.spacingSm,
-                        vertical: DuolingoTheme.spacingXs,
+                        horizontal: 6,
+                        vertical: 2,
                       ),
                       decoration: BoxDecoration(
                         color: DuolingoTheme.duoYellow,
-                        borderRadius: BorderRadius.circular(DuolingoTheme.radiusSmall),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         'Level ${widget.buildingLevel}',
                         style: DuolingoTheme.caption.copyWith(
                           color: DuolingoTheme.white,
                           fontWeight: FontWeight.w700,
+                          fontSize: 9,
                         ),
                       ),
                     ),
@@ -149,50 +155,75 @@ class _KingdomProgressionBuilderState extends State<KingdomProgressionBuilder>
     );
   }
 
-  CustomPainter _getProgressionPainter() {
+
+  Widget _getBuildingIcon() {
+    return Container(
+      decoration: BoxDecoration(
+        color: _getBuildingColor(),
+        borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
+      ),
+      child: Center(
+        child: Icon(
+          _getBuildingIconData(),
+          color: widget.isUnlocked ? DuolingoTheme.white : DuolingoTheme.mediumGray,
+          size: _getTierSpecificIconSize(),
+        ),
+      ),
+    );
+  }
+
+  IconData _getBuildingIconData() {
     switch (widget.building) {
       case KingdomBuilding.townCenter:
-        return _TownCenterProgressionPainter(
-          tier: widget.tier,
-          isUnlocked: widget.isUnlocked,
-          level: widget.buildingLevel,
-        );
+        return Icons.castle;
       case KingdomBuilding.library:
-        return _LibraryProgressionPainter(
-          tier: widget.tier,
-          isUnlocked: widget.isUnlocked,
-          level: widget.buildingLevel,
-        );
+        return Icons.local_library;
       case KingdomBuilding.tradingPost:
-        return _TradingPostProgressionPainter(
-          tier: widget.tier,
-          isUnlocked: widget.isUnlocked,
-          level: widget.buildingLevel,
-        );
+        return Icons.store_outlined;
       case KingdomBuilding.treasury:
-        return _TreasuryProgressionPainter(
-          tier: widget.tier,
-          isUnlocked: widget.isUnlocked,
-          level: widget.buildingLevel,
-        );
+        return Icons.account_balance;
       case KingdomBuilding.marketplace:
-        return _MarketplaceProgressionPainter(
-          tier: widget.tier,
-          isUnlocked: widget.isUnlocked,
-          level: widget.buildingLevel,
-        );
+        return Icons.store;
       case KingdomBuilding.observatory:
-        return _ObservatoryProgressionPainter(
-          tier: widget.tier,
-          isUnlocked: widget.isUnlocked,
-          level: widget.buildingLevel,
-        );
+        return Icons.science;
       case KingdomBuilding.academy:
-        return _AcademyProgressionPainter(
-          tier: widget.tier,
-          isUnlocked: widget.isUnlocked,
-          level: widget.buildingLevel,
-        );
+        return Icons.school;
+    }
+  }
+
+  Color _getBuildingColor() {
+    if (!widget.isUnlocked) {
+      return DuolingoTheme.mediumGray;
+    }
+    
+    switch (widget.building) {
+      case KingdomBuilding.townCenter:
+        return DuolingoTheme.duoGreen;
+      case KingdomBuilding.library:
+        return DuolingoTheme.duoBlue;
+      case KingdomBuilding.tradingPost:
+        return DuolingoTheme.duoOrange;
+      case KingdomBuilding.treasury:
+        return DuolingoTheme.duoYellow;
+      case KingdomBuilding.marketplace:
+        return DuolingoTheme.duoBlue;
+      case KingdomBuilding.observatory:
+        return DuolingoTheme.duoPurple;
+      case KingdomBuilding.academy:
+        return DuolingoTheme.duoGreen;
+    }
+  }
+
+  double _getTierSpecificIconSize() {
+    switch (widget.tier) {
+      case KingdomTier.village:
+        return 24.0;
+      case KingdomTier.town:
+        return 28.0;
+      case KingdomTier.city:
+        return 32.0;
+      case KingdomTier.kingdom:
+        return 36.0;
     }
   }
 

@@ -165,10 +165,10 @@ class _NavigationShellState extends State<NavigationShell>
       ),
       child: SafeArea(
         child: Container(
-          height: 72,
+          height: 68,
           padding: const EdgeInsets.symmetric(
             horizontal: DuolingoTheme.spacingMd,
-            vertical: DuolingoTheme.spacingSm,
+            vertical: 6,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -276,7 +276,7 @@ class _NavigationItemState extends State<_NavigationItem>
               return Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: DuolingoTheme.spacingSm,
-                vertical: DuolingoTheme.spacingSm,
+                vertical: 4,
               ),
               decoration: BoxDecoration(
                 color: widget.isSelected
@@ -299,7 +299,7 @@ class _NavigationItemState extends State<_NavigationItem>
                       size: 24,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Semantics(
                     label: widget.destination.label,
                     child: Text(

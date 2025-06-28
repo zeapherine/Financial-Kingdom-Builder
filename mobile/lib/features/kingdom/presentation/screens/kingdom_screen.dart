@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/config/duolingo_theme.dart';
 import '../../../../shared/widgets/gamification_widgets.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 import '../../../../shared/widgets/tutorial_overlay.dart';
 import '../../../../shared/widgets/tutorial_target.dart';
-import '../widgets/kingdom_buildings.dart';
-import '../widgets/additional_buildings.dart';
 import '../widgets/kingdom_tier_transitions.dart';
-import '../widgets/building_upgrade_animations.dart';
+import '../widgets/kingdom_progression_visuals.dart';
 import '../../domain/models/kingdom_state.dart';
 import '../../providers/kingdom_provider.dart';
 
@@ -80,7 +77,12 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
       ),
       drawer: const AppDrawer(),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
+        padding: const EdgeInsets.only(
+          left: DuolingoTheme.spacingSm,
+          right: DuolingoTheme.spacingSm,
+          top: DuolingoTheme.spacingSm,
+          bottom: DuolingoTheme.spacingXl + DuolingoTheme.spacingLg, // Increased bottom padding to prevent overflow
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -96,7 +98,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: DuolingoTheme.spacingLg),
+            const SizedBox(height: DuolingoTheme.spacingMd),
             
             // Kingdom Icon
             Container(
@@ -113,7 +115,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 color: DuolingoTheme.white,
               ),
             ),
-            const SizedBox(height: DuolingoTheme.spacingLg),
+            const SizedBox(height: DuolingoTheme.spacingMd),
             
             // Title
             Text(
@@ -132,7 +134,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: DuolingoTheme.spacingLg),
+            const SizedBox(height: DuolingoTheme.spacingMd),
             
             // Kingdom tier progression indicator
             Semantics(
@@ -144,143 +146,124 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 isUpgrading: false, // TODO: Connect to actual tier upgrade state
               ),
             ),
-            const SizedBox(height: DuolingoTheme.spacingXl),
+            const SizedBox(height: DuolingoTheme.spacingMd),
             
-            // Kingdom Buildings with Enhanced Visuals - Responsive Grid
-            LayoutBuilder(
-              builder: (context, constraints) {
-                // Responsive column count based on screen width
-                int crossAxisCount = 2;
-                if (constraints.maxWidth > 600) {
-                  crossAxisCount = 3;
-                } else if (constraints.maxWidth < 400) {
-                  crossAxisCount = 2;
-                }
-                
-                return GridView.count(
-                  crossAxisCount: crossAxisCount,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: DuolingoTheme.spacingMd,
-                  mainAxisSpacing: DuolingoTheme.spacingMd,
-                  childAspectRatio: constraints.maxWidth > 600 ? 0.85 : 0.9,
+            // Kingdom Buildings with Enhanced Visuals - Using KingdomProgressionBuilder
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: DuolingoTheme.spacingSm,
+              mainAxisSpacing: DuolingoTheme.spacingSm,
+              childAspectRatio: 1.1,
               children: [
-                // Town Center - unlocked at higher levels
-                KingdomTierTransition(
-                  currentTier: kingdomState.tier,
-                  child: BuildingUpgradeAnimation(
-                    currentLevel: kingdomState.getBuildingLevel(KingdomBuilding.townCenter),
-                    targetLevel: kingdomState.getBuildingLevel(KingdomBuilding.townCenter),
-                    building: KingdomBuilding.townCenter,
-                    child: TownCenterBuilding(
-                      isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.townCenter),
-                      onTap: () {
-                        // TODO: Navigate to kingdom management
-                      },
-                    ),
+                // Town Center - shows progression from village to kingdom
+                GestureDetector(
+                  onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.townCenter) 
+                      ? () {
+                          // TODO: Navigate to Town Center screen
+                          print('Town Center tapped');
+                        }
+                      : null,
+                  child: _buildKingdomBuilding(
+                    kingdomState,
+                    KingdomBuilding.townCenter,
+                    kingdomState.isBuildingUnlocked(KingdomBuilding.townCenter),
                   ),
                 ),
                 
-                // Library - available from start
+                // Library - available from start, shows progression  
                 TutorialTarget(
                   tutorialKey: _libraryKey,
-                  child: KingdomTierTransition(
-                    currentTier: kingdomState.tier,
-                    child: BuildingUpgradeAnimation(
-                      currentLevel: kingdomState.getBuildingLevel(KingdomBuilding.library),
-                      targetLevel: kingdomState.getBuildingLevel(KingdomBuilding.library),
-                      building: KingdomBuilding.library,
-                      child: LibraryBuilding(
-                        isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.library),
-                        onTap: () => context.go('/education'),
-                      ),
+                  child: GestureDetector(
+                    onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.library) 
+                        ? () {
+                            // TODO: Navigate to Library screen
+                            print('Library tapped');
+                          }
+                        : null,
+                    child: _buildKingdomBuilding(
+                      kingdomState,
+                      KingdomBuilding.library,
+                      kingdomState.isBuildingUnlocked(KingdomBuilding.library),
                     ),
                   ),
                 ),
                 
                 // Trading Post - unlocked after completing education modules
-                KingdomTierTransition(
-                  currentTier: kingdomState.tier,
-                  child: BuildingUpgradeAnimation(
-                    currentLevel: kingdomState.getBuildingLevel(KingdomBuilding.tradingPost),
-                    targetLevel: kingdomState.getBuildingLevel(KingdomBuilding.tradingPost),
-                    building: KingdomBuilding.tradingPost,
-                    child: TradingPostBuilding(
-                      isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.tradingPost),
-                      onTap: () => context.go('/trading'),
-                    ),
+                GestureDetector(
+                  onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.tradingPost) 
+                      ? () {
+                          // TODO: Navigate to Trading Post screen
+                          print('Trading Post tapped');
+                        }
+                      : null,
+                  child: _buildKingdomBuilding(
+                    kingdomState,
+                    KingdomBuilding.tradingPost,
+                    kingdomState.isBuildingUnlocked(KingdomBuilding.tradingPost),
                   ),
                 ),
                 
                 // Treasury - unlocked after first trades
-                KingdomTierTransition(
-                  currentTier: kingdomState.tier,
-                  child: BuildingUpgradeAnimation(
-                    currentLevel: kingdomState.getBuildingLevel(KingdomBuilding.treasury),
-                    targetLevel: kingdomState.getBuildingLevel(KingdomBuilding.treasury),
-                    building: KingdomBuilding.treasury,
-                    child: TreasuryBuilding(
-                      isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.treasury),
-                      onTap: () {
-                        // TODO: Navigate to portfolio management
-                      },
-                    ),
+                GestureDetector(
+                  onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.treasury) 
+                      ? () {
+                          // TODO: Navigate to Treasury screen
+                          print('Treasury tapped');
+                        }
+                      : null,
+                  child: _buildKingdomBuilding(
+                    kingdomState,
+                    KingdomBuilding.treasury,
+                    kingdomState.isBuildingUnlocked(KingdomBuilding.treasury),
                   ),
                 ),
                 
-                // Marketplace - unlocked at City level for social trading
-                KingdomTierTransition(
-                  currentTier: kingdomState.tier,
-                  child: BuildingUpgradeAnimation(
-                    currentLevel: kingdomState.getBuildingLevel(KingdomBuilding.marketplace),
-                    targetLevel: kingdomState.getBuildingLevel(KingdomBuilding.marketplace),
-                    building: KingdomBuilding.marketplace,
-                    child: MarketplaceBuilding(
-                      isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.marketplace),
-                      onTap: () => context.go('/social'),
-                    ),
+                // Marketplace
+                GestureDetector(
+                  onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.marketplace) 
+                      ? () {
+                          // TODO: Navigate to Marketplace screen
+                          print('Marketplace tapped');
+                        }
+                      : null,
+                  child: _buildKingdomBuilding(
+                    kingdomState,
+                    KingdomBuilding.marketplace,
+                    kingdomState.isBuildingUnlocked(KingdomBuilding.marketplace),
                   ),
                 ),
                 
-                // Observatory - unlocked at Kingdom level for advanced analytics
-                KingdomTierTransition(
-                  currentTier: kingdomState.tier,
-                  child: BuildingUpgradeAnimation(
-                    currentLevel: kingdomState.getBuildingLevel(KingdomBuilding.observatory),
-                    targetLevel: kingdomState.getBuildingLevel(KingdomBuilding.observatory),
-                    building: KingdomBuilding.observatory,
-                    child: ObservatoryBuilding(
-                      isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.observatory),
-                      onTap: () {
-                        // TODO: Navigate to market analysis
-                      },
-                    ),
+                // Observatory
+                GestureDetector(
+                  onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.observatory) 
+                      ? () {
+                          // TODO: Navigate to Observatory screen
+                          print('Observatory tapped');
+                        }
+                      : null,
+                  child: _buildKingdomBuilding(
+                    kingdomState,
+                    KingdomBuilding.observatory,
+                    kingdomState.isBuildingUnlocked(KingdomBuilding.observatory),
                   ),
                 ),
-                
-                // Academy - unlocked at Town level for advanced education
-                KingdomTierTransition(
-                  currentTier: kingdomState.tier,
-                  child: BuildingUpgradeAnimation(
-                    currentLevel: kingdomState.getBuildingLevel(KingdomBuilding.academy),
-                    targetLevel: kingdomState.getBuildingLevel(KingdomBuilding.academy),
-                    building: KingdomBuilding.academy,
-                    child: AcademyBuilding(
-                      isUnlocked: kingdomState.isBuildingUnlocked(KingdomBuilding.academy),
-                      onTap: () {
-                        // TODO: Navigate to advanced education modules
-                      },
-                    ),
-                  ),
-                ),
-                  ],
-                );
-              },
+              ],
             ),
           ],
         ),
       ),
     ),
+    );
+  }
+
+  Widget _buildKingdomBuilding(KingdomState kingdomState, KingdomBuilding building, bool isUnlocked) {
+    return KingdomProgressionBuilder(
+      tier: kingdomState.tier,
+      building: building,
+      isUnlocked: isUnlocked,
+      buildingLevel: kingdomState.getBuildingLevel(building),
     );
   }
 }

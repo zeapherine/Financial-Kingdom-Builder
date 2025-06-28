@@ -5,7 +5,7 @@ import 'package:financial_kingdom_builder/core/exceptions/app_exceptions.dart';
 
 // Mock Kingdom Provider for testing (simplified version without code generation issues)
 class MockKingdomNotifier extends StateNotifier<KingdomState> {
-  MockKingdomNotifier() : super(const KingdomState());
+  MockKingdomNotifier() : super(KingdomState());
 
   void addExperience(int xp) {
     if (xp < 0) {

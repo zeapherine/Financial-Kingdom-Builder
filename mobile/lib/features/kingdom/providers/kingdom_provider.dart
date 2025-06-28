@@ -9,7 +9,7 @@ import '../../../core/services/error_handler_service.dart';
 class KingdomNotifier extends StateNotifier<KingdomState> {
   static const String _storageKey = 'kingdom_state';
 
-  KingdomNotifier() : super(const KingdomState()) {
+  KingdomNotifier() : super(KingdomState()) {
     _loadKingdomState();
   }
 
@@ -109,7 +109,7 @@ class KingdomNotifier extends StateNotifier<KingdomState> {
       }
     } catch (e) {
       // If loading fails, start with default state
-      state = const KingdomState();
+      state = KingdomState();
     }
   }
 
@@ -124,7 +124,7 @@ class KingdomNotifier extends StateNotifier<KingdomState> {
   }
 
   void resetKingdom() {
-    state = const KingdomState();
+    state = KingdomState();
     _saveKingdomState();
   }
 }

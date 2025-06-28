@@ -1,3 +1,5 @@
+import 'resource_management_state.dart';
+
 enum KingdomTier {
   village,
   town,
@@ -90,10 +92,11 @@ class KingdomState {
   final int experience;
   final Map<KingdomBuilding, bool> unlockedBuildings;
   final Map<KingdomBuilding, int> buildingLevels;
-  final Map<String, int> resources; // Gold, Gems, Wood
+  final Map<String, int> resources; // Legacy resources for compatibility
   final int currency; // Primary currency for upgrades
+  final ResourceManagementState resourceManagement;
 
-  const KingdomState({
+  KingdomState({
     this.tier = KingdomTier.village,
     this.experience = 0,
     this.unlockedBuildings = const {
@@ -120,7 +123,8 @@ class KingdomState {
       'wood': 50,
     },
     this.currency = 100,
-  });
+    ResourceManagementState? resourceManagement,
+  }) : resourceManagement = resourceManagement ?? ResourceManagementState.initial;
 
   KingdomState copyWith({
     KingdomTier? tier,
@@ -129,6 +133,7 @@ class KingdomState {
     Map<KingdomBuilding, int>? buildingLevels,
     Map<String, int>? resources,
     int? currency,
+    ResourceManagementState? resourceManagement,
   }) {
     return KingdomState(
       tier: tier ?? this.tier,
@@ -137,6 +142,7 @@ class KingdomState {
       buildingLevels: buildingLevels ?? this.buildingLevels,
       resources: resources ?? this.resources,
       currency: currency ?? this.currency,
+      resourceManagement: resourceManagement ?? this.resourceManagement,
     );
   }
 
@@ -211,6 +217,7 @@ class KingdomState {
         (building, level) => MapEntry(building.name, level),
       ),
       'resources': resources,
+      'resourceManagement': resourceManagement.toJson(),
     };
   }
 
@@ -238,6 +245,10 @@ class KingdomState {
       );
       return MapEntry(building, value as int? ?? 0);
     });
+
+    final resourceManagement = json['resourceManagement'] != null
+        ? ResourceManagementState.fromJson(json['resourceManagement'])
+        : ResourceManagementState.initial;
 
     return KingdomState(
       tier: tier,
@@ -270,6 +281,7 @@ class KingdomState {
         'gems': 0,
         'wood': 50,
       }),
+      resourceManagement: resourceManagement,
     );
   }
 }
