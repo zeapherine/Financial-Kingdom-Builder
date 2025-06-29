@@ -13,6 +13,9 @@ import { ordersRouter } from './routes/orders';
 import { marketDataRouter } from './routes/market-data';
 import { userTierRouter } from './routes/user-tier';
 import { stopLossRouter } from './routes/stop-loss';
+import { kycRouter } from './routes/kyc';
+import { webhooksRouter } from './routes/webhooks';
+import { complianceRouter } from './routes/compliance';
 import { AppError } from './utils/app-error';
 import { PerpetualMarketDataService } from './services/perpetual-market-data.service';
 import { PerpetualPortfolioService } from './services/perpetual-portfolio.service';
@@ -65,6 +68,9 @@ app.use('/orders', validateAuth, ordersRouter);
 app.use('/market-data', marketDataRouter);
 app.use('/user-tier', validateAuth, userTierRouter);
 app.use('/stop-loss', validateAuth, stopLossRouter);
+app.use('/kyc', validateAuth, kycRouter);
+app.use('/webhooks', webhooksRouter);
+app.use('/compliance', validateAuth, complianceRouter);
 
 app.get('/', (req, res) => {
   res.json({
@@ -77,12 +83,20 @@ app.get('/', (req, res) => {
       'Real-time market data simulation',
       'Funding rate calculations',
       'Risk management and liquidation',
-      'Extended Exchange integration ready'
+      'Extended Exchange integration ready',
+      'KYC verification system',
+      'Webhook integration for real-time updates',
+      'Compliance and audit logging'
     ],
     endpoints: {
       portfolio: '/portfolio',
       orders: '/orders',
       marketData: '/market-data',
+      userTier: '/user-tier',
+      stopLoss: '/stop-loss',
+      kyc: '/kyc',
+      webhooks: '/webhooks',
+      compliance: '/compliance',
       health: '/health'
     }
   });
@@ -101,6 +115,9 @@ const server = app.listen(PORT, () => {
   logger.info('- Market data simulation active');
   logger.info('- Funding rate calculations enabled');
   logger.info('- Extended Exchange integration prepared');
+  logger.info('- KYC verification system ready');
+  logger.info('- Webhook endpoints active');
+  logger.info('- Compliance and audit logging enabled');
 });
 
 process.on('SIGTERM', () => {
