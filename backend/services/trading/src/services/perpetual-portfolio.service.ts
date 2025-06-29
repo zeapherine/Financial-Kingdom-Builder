@@ -13,13 +13,26 @@ import {
 } from '../types/perpetual';
 import { logger } from '../utils/logger';
 import { AppError } from '../utils/app-error';
+import { UserTierService, UserTier } from './user-tier.service';
+
+interface TradingSuspension {
+  userId: string;
+  reason: string;
+  suspendedUntil: Date;
+  suspensionType: 'daily_loss' | 'consecutive_loss' | 'tier_violation';
+  canTrade: boolean;
+}
 
 export class PerpetualPortfolioService {
   private portfolios: Map<string, PerpetualPortfolio> = new Map();
   private positions: Map<string, PerpetualPosition> = new Map();
   private riskLimits: Map<string, RiskLimits> = new Map();
+  private userTierService: UserTierService;
+  private dailyLossTracking: Map<string, { date: string; losses: number; trades: number }> = new Map();
+  private tradingSuspensions: Map<string, TradingSuspension> = new Map();
 
   constructor() {
+    this.userTierService = new UserTierService();
     this.initializeDefaultRiskLimits();
   }
 
@@ -69,14 +82,17 @@ export class PerpetualPortfolioService {
   }
 
   /**
-   * Open a new perpetual position
+   * Open a new perpetual position with tier-based limits
    */
   async openPosition(userId: string, request: OpenPositionRequest, currentPrice: number): Promise<PerpetualPosition> {
     const portfolio = await this.getOrCreatePortfolio(userId, request.isPaperTrading);
-    const riskLimits = this.getRiskLimits(userId);
+    const userTier = await this.userTierService.getUserTier(userId);
 
-    // Validate request
-    this.validateOpenPositionRequest(request, portfolio, riskLimits, currentPrice);
+    // Check for trading suspension first
+    await this.checkTradingSuspension(userId);
+    
+    // Validate request with tier-based limits
+    await this.validateOpenPositionRequest(userId, request, portfolio, userTier, currentPrice);
 
     // Calculate position parameters
     const margin = request.size / request.leverage;
@@ -89,6 +105,17 @@ export class PerpetualPortfolioService {
     // Check if user has sufficient balance
     if (margin > portfolio.availableBalance) {
       throw new AppError(`Insufficient balance. Required: $${margin.toFixed(2)}, Available: $${portfolio.availableBalance.toFixed(2)}`, 400);
+    }
+
+    // Set mandatory stop-loss for beginner tiers if not provided
+    let stopLoss = request.stopLoss;
+    if (userTier.limits.forceStopLoss && !stopLoss) {
+      stopLoss = this.calculateMandatoryStopLoss(
+        request.side,
+        currentPrice,
+        userTier.limits.stopLossPercentage
+      );
+      logger.info(`Auto-set mandatory stop-loss for ${userTier.tierName} user ${userId}: ${stopLoss}`);
     }
 
     // Create position
@@ -110,7 +137,7 @@ export class PerpetualPortfolioService {
       openTime: new Date(),
       fundingPaid: 0,
       isPaperTrading: request.isPaperTrading,
-      stopLoss: request.stopLoss,
+      stopLoss,
       takeProfit: request.takeProfit,
       autoDeleverage: false
     };
@@ -178,6 +205,23 @@ export class PerpetualPortfolioService {
 
     // Update daily PnL
     portfolio.dailyPnl += realizedPnl;
+    
+    // Record trade outcome for tier system and risk management
+    const holdTime = position.openTime ? 
+      Math.floor((Date.now() - position.openTime.getTime()) / (1000 * 60)) : 0; // in minutes
+    
+    await this.userTierService.recordTrade(userId, {
+      isWin: realizedPnl > 0,
+      pnl: realizedPnl,
+      positionSize: request.size || position.size,
+      holdTime,
+    });
+    
+    // If this was a loss, track it for daily limits and consecutive loss patterns
+    if (realizedPnl < 0) {
+      await this.recordTradeLoss(userId, Math.abs(realizedPnl));
+      await this.checkConsecutiveLossPattern(userId);
+    }
 
     logger.info(`Closed position ${request.positionId} for ${userId}: PnL ${realizedPnl.toFixed(2)}`);
 
@@ -202,6 +246,11 @@ export class PerpetualPortfolioService {
         // Check for liquidation
         if (this.shouldLiquidate(position, markPrice)) {
           await this.liquidatePosition(position.id, markPrice);
+        }
+        
+        // Check for stop-loss triggers
+        if (this.shouldTriggerStopLoss(position, markPrice)) {
+          await this.triggerStopLoss(position.id, markPrice);
         }
 
         // Update portfolio unrealized PnL
@@ -311,27 +360,75 @@ export class PerpetualPortfolioService {
 
   // Private helper methods
 
-  private validateOpenPositionRequest(
+  private async validateOpenPositionRequest(
+    userId: string,
     request: OpenPositionRequest,
     portfolio: PerpetualPortfolio,
-    riskLimits: RiskLimits,
+    userTier: UserTier,
     currentPrice: number
-  ): void {
-    if (request.leverage > riskLimits.maxLeverage) {
-      throw new AppError(`Leverage ${request.leverage}x exceeds maximum allowed ${riskLimits.maxLeverage}x`, 400);
+  ): Promise<void> {
+    const limits = userTier.limits;
+    
+    // Check leverage limits based on user tier
+    if (request.leverage > limits.maxLeverage) {
+      throw new AppError(
+        `Your ${userTier.tierName} status allows maximum ${limits.maxLeverage}x leverage. ` +
+        `Current request: ${request.leverage}x. Complete more education to unlock higher leverage.`,
+        400
+      );
     }
 
-    if (request.size > riskLimits.maxPositionSize) {
-      throw new AppError(`Position size $${request.size} exceeds maximum allowed $${riskLimits.maxPositionSize}`, 400);
+    // Check position size limits
+    if (request.size > limits.maxPositionSize) {
+      throw new AppError(
+        `Position size $${request.size} exceeds ${userTier.tierName} limit of $${limits.maxPositionSize}. ` +
+        `Upgrade your kingdom tier to trade larger positions.`,
+        400
+      );
     }
 
+    // Check maximum open positions
     const openPositionsCount = portfolio.positions.filter(p => p.status === PositionStatus.OPEN).length;
-    if (openPositionsCount >= riskLimits.maxOpenPositions) {
-      throw new AppError(`Maximum open positions (${riskLimits.maxOpenPositions}) reached`, 400);
+    if (openPositionsCount >= limits.maxOpenPositions) {
+      throw new AppError(
+        `Maximum open positions (${limits.maxOpenPositions}) reached for ${userTier.tierName}. ` +
+        `Close existing positions or upgrade your tier.`,
+        400
+      );
     }
 
-    if (request.size > riskLimits.maxOrderValue) {
-      throw new AppError(`Order value $${request.size} exceeds maximum allowed $${riskLimits.maxOrderValue}`, 400);
+    // Check order value limits
+    if (request.size > limits.maxOrderValue) {
+      throw new AppError(
+        `Order value $${request.size} exceeds ${userTier.tierName} limit of $${limits.maxOrderValue}.`,
+        400
+      );
+    }
+
+    // Check daily loss limits
+    await this.checkDailyLossLimits(userId, request.size, limits.maxDailyLoss);
+    
+    // Check instrument access
+    if (!this.isInstrumentAllowed(request.symbol, limits.allowedInstruments)) {
+      throw new AppError(
+        `Trading ${request.symbol} requires higher tier. Your ${userTier.tierName} status restricts available instruments.`,
+        400
+      );
+    }
+    
+    // Force stop loss for certain tiers
+    if (limits.forceStopLoss && !request.stopLoss) {
+      const suggestedStopLoss = this.calculateMandatoryStopLoss(
+        request.side, 
+        currentPrice, 
+        limits.stopLossPercentage
+      );
+      
+      throw new AppError(
+        `${userTier.tierName} requires mandatory stop loss. ` +
+        `Suggested stop loss: $${suggestedStopLoss.toFixed(2)} (${limits.stopLossPercentage}% protection).`,
+        400
+      );
     }
   }
 
@@ -382,6 +479,43 @@ export class PerpetualPortfolioService {
       return markPrice >= position.liquidationPrice * (1 - threshold);
     }
   }
+  
+  private shouldTriggerStopLoss(position: PerpetualPosition, markPrice: number): boolean {
+    if (!position.stopLoss) return false;
+    
+    if (position.side === PositionSide.LONG) {
+      return markPrice <= position.stopLoss;
+    } else {
+      return markPrice >= position.stopLoss;
+    }
+  }
+  
+  private async triggerStopLoss(positionId: string, markPrice: number): Promise<void> {
+    const position = this.positions.get(positionId);
+    if (!position) return;
+    
+    logger.info(`Stop-loss triggered for position ${positionId} at ${markPrice}`);
+    
+    // Close the position at stop-loss price
+    try {
+      await this.closePosition(position.userId, {
+        positionId: position.id,
+        size: position.size, // Close full position
+      }, markPrice);
+      
+      // Mark position as stop-loss triggered
+      position.status = PositionStatus.CLOSED;
+      position.closeTime = new Date();
+      position.closePrice = markPrice;
+      
+      // Notify user of stop-loss execution
+      logger.info(`Stop-loss executed for user ${position.userId}: ` +
+        `Position ${positionId} closed at ${markPrice} (stop-loss: ${position.stopLoss})`);
+      
+    } catch (error) {
+      logger.error(`Failed to execute stop-loss for position ${positionId}:`, error);
+    }
+  }
 
   private async liquidatePosition(positionId: string, markPrice: number): Promise<void> {
     const position = this.positions.get(positionId);
@@ -422,6 +556,304 @@ export class PerpetualPortfolioService {
 
   private getRiskLimits(userId: string): RiskLimits {
     return this.riskLimits.get(userId) || this.riskLimits.get('default')!;
+  }
+  
+  /**
+   * Check for active trading suspension
+   */
+  private async checkTradingSuspension(userId: string): Promise<void> {
+    const suspension = this.tradingSuspensions.get(userId);
+    
+    if (suspension && suspension.canTrade === false) {
+      const now = new Date();
+      
+      if (now < suspension.suspendedUntil) {
+        const hoursRemaining = Math.ceil((suspension.suspendedUntil.getTime() - now.getTime()) / (1000 * 60 * 60));
+        
+        throw new AppError(
+          `Trading suspended due to ${suspension.reason}. ` +
+          `Suspension will be lifted in ${hoursRemaining} hours (${suspension.suspendedUntil.toISOString()}). ` +
+          `This is for your protection and risk management.`,
+          403
+        );
+      } else {
+        // Suspension expired, remove it
+        this.tradingSuspensions.delete(userId);
+        logger.info(`Trading suspension lifted for user ${userId}`);
+      }
+    }
+  }
+  
+  /**
+   * Check daily loss limits for user tier
+   */
+  private async checkDailyLossLimits(userId: string, positionSize: number, maxDailyLoss: number): Promise<void> {
+    const today = new Date().toISOString().split('T')[0];
+    const key = `${userId}_${today}`;
+    
+    let dailyLoss = this.dailyLossTracking.get(key);
+    if (!dailyLoss) {
+      dailyLoss = { date: today, losses: 0, trades: 0 };
+      this.dailyLossTracking.set(key, dailyLoss);
+    }
+    
+    // Calculate potential loss (conservative estimate based on leverage and volatility)
+    const leverage = Math.min(20, Math.max(1, positionSize / 1000)); // Estimate leverage
+    const potentialLoss = positionSize * 0.1 * leverage; // 10% move with leverage
+    
+    if (dailyLoss.losses + potentialLoss > maxDailyLoss) {
+      // Suspend trading for the rest of the day
+      await this.suspendTrading(userId, 'daily_loss', 
+        `Daily loss limit reached: $${dailyLoss.losses.toFixed(2)} + potential $${potentialLoss.toFixed(2)} > limit $${maxDailyLoss}`);
+      
+      throw new AppError(
+        `Daily loss limit protection activated. ` +
+        `Current losses: $${dailyLoss.losses.toFixed(2)}, ` +
+        `Limit: $${maxDailyLoss}, ` +
+        `Potential additional loss: $${potentialLoss.toFixed(2)}. ` +
+        `Trading has been suspended until tomorrow to protect your kingdom.`,
+        403
+      );
+    }
+  }
+  
+  /**
+   * Check if instrument is allowed for user tier
+   */
+  private isInstrumentAllowed(symbol: string, allowedInstruments: string[]): boolean {
+    return allowedInstruments.includes('*') || allowedInstruments.includes(symbol);
+  }
+  
+  /**
+   * Calculate mandatory stop loss based on tier requirements
+   */
+  private calculateMandatoryStopLoss(side: PositionSide, entryPrice: number, stopLossPercentage: number): number {
+    const stopLossRatio = stopLossPercentage / 100;
+    
+    if (side === PositionSide.LONG) {
+      return entryPrice * (1 - stopLossRatio);
+    } else {
+      return entryPrice * (1 + stopLossRatio);
+    }
+  }
+  
+  /**
+   * Suspend trading for a user
+   */
+  private async suspendTrading(userId: string, type: TradingSuspension['suspensionType'], reason: string): Promise<void> {
+    const suspendedUntil = new Date();
+    
+    // Determine suspension duration based on type
+    switch (type) {
+      case 'daily_loss':
+        // Suspend until next day
+        suspendedUntil.setDate(suspendedUntil.getDate() + 1);
+        suspendedUntil.setHours(0, 0, 0, 0); // Start of next day
+        break;
+      case 'consecutive_loss':
+        // Suspend for 2 hours for cooling off
+        suspendedUntil.setHours(suspendedUntil.getHours() + 2);
+        break;
+      case 'tier_violation':
+        // Suspend for 24 hours
+        suspendedUntil.setHours(suspendedUntil.getHours() + 24);
+        break;
+    }
+    
+    const suspension: TradingSuspension = {
+      userId,
+      reason,
+      suspendedUntil,
+      suspensionType: type,
+      canTrade: false,
+    };
+    
+    this.tradingSuspensions.set(userId, suspension);
+    
+    logger.warn(`Trading suspended for user ${userId}: ${reason}. Until: ${suspendedUntil.toISOString()}`);
+    
+    // Demote user tier if serious violation
+    if (type === 'tier_violation') {
+      await this.userTierService.demoteUser(userId, reason);
+    }
+  }
+  
+  /**
+   * Record actual trade loss for daily tracking
+   */
+  async recordTradeLoss(userId: string, loss: number): Promise<void> {
+    if (loss <= 0) return; // Only record losses
+    
+    const today = new Date().toISOString().split('T')[0];
+    const key = `${userId}_${today}`;
+    
+    let dailyLoss = this.dailyLossTracking.get(key);
+    if (!dailyLoss) {
+      dailyLoss = { date: today, losses: 0, trades: 0 };
+    }
+    
+    dailyLoss.losses += Math.abs(loss);
+    dailyLoss.trades += 1;
+    this.dailyLossTracking.set(key, dailyLoss);
+    
+    // Get user tier to check limits
+    const userTier = await this.userTierService.getUserTier(userId);
+    
+    // Check if daily loss limit exceeded
+    if (dailyLoss.losses >= userTier.limits.maxDailyLoss) {
+      await this.suspendTrading(userId, 'daily_loss', 
+        `Daily loss limit of $${userTier.limits.maxDailyLoss} exceeded with $${dailyLoss.losses.toFixed(2)} in losses`);
+    }
+    
+    // Record trade in user tier service
+    await this.userTierService.recordTrade(userId, {
+      isWin: false,
+      pnl: -loss,
+      positionSize: 0, // Will be updated when we have full trade data
+      holdTime: 0,
+    });
+  }
+  
+  /**
+   * Check for consecutive loss patterns and suspend if needed
+   */
+  private async checkConsecutiveLossPattern(userId: string): Promise<void> {
+    const profile = await this.userTierService.getUserProfile(userId);
+    const userTier = await this.userTierService.getUserTier(userId);
+    
+    // If user has excessive consecutive losses, suspend for cooling off
+    if (profile.statistics.consecutiveLosses >= 5) {
+      await this.suspendTrading(userId, 'consecutive_loss', 
+        `${profile.statistics.consecutiveLosses} consecutive losses detected. Cooling off period activated for better decision-making.`);
+    }
+  }
+  
+  /**
+   * Get trading suspension status
+   */
+  async getTradingSuspensionStatus(userId: string): Promise<TradingSuspension | null> {
+    const suspension = this.tradingSuspensions.get(userId);
+    
+    if (suspension) {
+      const now = new Date();
+      
+      if (now >= suspension.suspendedUntil) {
+        // Suspension expired
+        this.tradingSuspensions.delete(userId);
+        return null;
+      }
+      
+      return suspension;
+    }
+    
+    return null;
+  }
+  
+  /**
+   * Force lift suspension (admin only)
+   */
+  async liftTradingSuspension(userId: string, adminReason: string): Promise<boolean> {
+    const suspension = this.tradingSuspensions.get(userId);
+    
+    if (suspension) {
+      this.tradingSuspensions.delete(userId);
+      logger.info(`Trading suspension lifted for user ${userId} by admin: ${adminReason}`);
+      return true;
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Get user tier progression and limits
+   */
+  async getUserTierInfo(userId: string): Promise<{
+    tier: UserTier;
+    progression: any;
+    dailyLossUsed: number;
+    dailyLossRemaining: number;
+  }> {
+    const tier = await this.userTierService.getUserTier(userId);
+    const progression = await this.userTierService.getTierProgression(userId);
+    
+    const today = new Date().toISOString().split('T')[0];
+    const key = `${userId}_${today}`;
+    const dailyLoss = this.dailyLossTracking.get(key);
+    const dailyLossUsed = dailyLoss?.losses || 0;
+    const dailyLossRemaining = Math.max(0, tier.limits.maxDailyLoss - dailyLossUsed);
+    
+    return {
+      tier,
+      progression,
+      dailyLossUsed,
+      dailyLossRemaining,
+    };
+  }
+
+  /**
+   * Update stop-loss for a position
+   */
+  async updateStopLoss(userId: string, positionId: string, newStopLoss: number | null): Promise<PerpetualPosition> {
+    const position = this.positions.get(positionId);
+    if (!position || position.userId !== userId) {
+      throw new AppError('Position not found', 404);
+    }
+    
+    if (position.status !== PositionStatus.OPEN) {
+      throw new AppError('Cannot update stop-loss on closed position', 400);
+    }
+    
+    const userTier = await this.userTierService.getUserTier(userId);
+    
+    // Check if tier requires mandatory stop-loss
+    if (userTier.limits.forceStopLoss && !newStopLoss) {
+      throw new AppError(
+        `${userTier.tierName} requires mandatory stop-loss. Cannot remove stop-loss protection.`,
+        400
+      );
+    }
+    
+    position.stopLoss = newStopLoss || undefined;
+    logger.info(`Updated stop-loss for position ${positionId}: ${newStopLoss || 'removed'}`);
+    
+    return position;
+  }
+  
+  /**
+   * Get positions with stop-loss analysis
+   */
+  async getPositionsWithStopLoss(userId: string, isPaperTrading: boolean = true): Promise<{
+    positions: PerpetualPosition[];
+    stopLossAnalysis: {
+      totalPositions: number;
+      positionsWithStopLoss: number;
+      mandatoryStopLossRequired: boolean;
+      averageStopLossDistance: number;
+    };
+  }> {
+    const portfolio = await this.getOrCreatePortfolio(userId, isPaperTrading);
+    const userTier = await this.userTierService.getUserTier(userId);
+    const openPositions = portfolio.positions.filter(p => p.status === PositionStatus.OPEN);
+    
+    const positionsWithStopLoss = openPositions.filter(p => p.stopLoss);
+    const stopLossDistances = positionsWithStopLoss.map(p => {
+      if (!p.stopLoss) return 0;
+      const distance = Math.abs(p.markPrice - p.stopLoss) / p.markPrice;
+      return distance * 100; // as percentage
+    });
+    
+    const averageStopLossDistance = stopLossDistances.length > 0 ?
+      stopLossDistances.reduce((sum, dist) => sum + dist, 0) / stopLossDistances.length : 0;
+    
+    return {
+      positions: openPositions,
+      stopLossAnalysis: {
+        totalPositions: openPositions.length,
+        positionsWithStopLoss: positionsWithStopLoss.length,
+        mandatoryStopLossRequired: userTier.limits.forceStopLoss,
+        averageStopLossDistance,
+      },
+    };
   }
 
   private generatePositionId(): string {

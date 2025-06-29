@@ -13,7 +13,15 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix"
   },
-  "keywords": ["trading", "market-data", "portfolio", "orders"],
+  "keywords": [
+    "trading",
+    "market-data",
+    "portfolio",
+    "orders"
+  ],
   "author": "Financial Kingdom Builder Team",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "lru-cache": "^11.1.0"
+  }
 }

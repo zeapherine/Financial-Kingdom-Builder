@@ -135,21 +135,66 @@ router.post('/simulate/:symbol', async (req: Request, res: Response, next: NextF
   }
 });
 
+// Get funding rate predictions
+router.get('/funding/predictions/:symbol', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { symbol } = req.params;
+    const predictions = await marketDataService.getFundingPredictions(symbol.toUpperCase());
+    
+    res.json({
+      success: true,
+      data: {
+        symbol: symbol.toUpperCase(),
+        predictions,
+        note: 'Predictions for next 3 funding periods (24 hours)'
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get service health status
+router.get('/health/detailed', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const healthStatus = marketDataService.getHealthStatus();
+    
+    res.json({
+      success: true,
+      message: 'Market data service health status',
+      data: healthStatus
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Extended Exchange integration endpoints (placeholders)
 router.get('/extended/status', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const healthStatus = marketDataService.getHealthStatus();
+    
     res.json({
       success: true,
       message: 'Extended Exchange integration status',
       data: {
-        connected: false,
-        lastUpdate: null,
+        connected: healthStatus.currentDataSource === 'extended-exchange',
+        currentDataSource: healthStatus.currentDataSource,
+        circuitBreakers: healthStatus.circuitBreakers,
+        lastUpdate: new Date().toISOString(),
         endpoints: {
           prices: '/api/v1/ticker/24hr',
           funding: '/api/v1/premiumIndex',
           positions: '/api/v1/positionRisk'
         },
-        note: 'Extended Exchange integration will be implemented when connecting to real trading'
+        features: {
+          circuitBreaker: 'Active',
+          rateLimiting: 'Active',
+          caching: 'Active',
+          failover: 'Active',
+          fundingPredictions: 'Active'
+        },
+        note: 'Extended Exchange integration ready with full resilience features'
       }
     });
   } catch (error) {

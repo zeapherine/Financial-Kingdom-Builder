@@ -11,6 +11,8 @@ import { healthRouter } from './routes/health';
 import { portfolioRouter } from './routes/portfolio';
 import { ordersRouter } from './routes/orders';
 import { marketDataRouter } from './routes/market-data';
+import { userTierRouter } from './routes/user-tier';
+import { stopLossRouter } from './routes/stop-loss';
 import { AppError } from './utils/app-error';
 import { PerpetualMarketDataService } from './services/perpetual-market-data.service';
 import { PerpetualPortfolioService } from './services/perpetual-portfolio.service';
@@ -61,6 +63,8 @@ app.use('/health', healthRouter);
 app.use('/portfolio', validateAuth, portfolioRouter);
 app.use('/orders', validateAuth, ordersRouter);
 app.use('/market-data', marketDataRouter);
+app.use('/user-tier', validateAuth, userTierRouter);
+app.use('/stop-loss', validateAuth, stopLossRouter);
 
 app.get('/', (req, res) => {
   res.json({
