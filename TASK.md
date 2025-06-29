@@ -25,8 +25,8 @@
 
 ---
 
-## PHASE 1: FOUNDATION (Months 1-3)
-*Core kingdom interface, educational framework, paper trading*
+## PHASE 1: FOUNDATION (Months 1-3) - PERPETUAL-FIRST APPROACH
+*Core kingdom interface, educational framework, perpetual paper trading (v0 focuses on perpetuals only)*
 
 ### 1.1 PROJECT SETUP & INFRASTRUCTURE
 
@@ -253,54 +253,82 @@
 - [x] Optimized rendering using ListView.builder and efficient widgets
 **Status**: Completed
 
-### 1.5 PAPER TRADING SYSTEM
+### 1.5 PERPETUAL PAPER TRADING SYSTEM
 
-#### TRADE-001: **2025-06-25** Virtual Trading Engine
-**Description**: Complete paper trading system for Tier 1 users
+#### TRADE-001: **2025-06-29** Perpetual Paper Trading Engine
+**Description**: Complete perpetual paper trading system for Tier 1 users (perpetual-first approach)
 **Priority**: High | **Effort**: Large | **Dependencies**: INFRA-003, INFRA-004
 **Acceptance Criteria**:
-- [ ] Virtual portfolio management (100% virtual currency)
-- [ ] Order placement system (market, limit, stop orders)
-- [ ] Real-time market data integration (CoinGecko API)
-- [ ] Portfolio performance tracking and analytics
-- [ ] Trade history and transaction logs
-- [ ] P&L calculations and reporting
+- [ ] Virtual perpetual portfolio management (100% virtual currency)
+- [ ] Long/short position system with leverage (2x, 5x, 10x, 20x)
+- [ ] Margin and liquidation calculations
+- [ ] Simulated funding rate payments (hourly)
+- [ ] Mark price vs index price tracking
+- [ ] Position P&L calculations (unrealized and realized)
 - [ ] Virtual balance management ($10,000 starting balance)
-- [ ] Risk simulation without real money impact
-- [ ] Trading education integrated with each action
-- [ ] Performance benchmarking against market indices
+- [ ] Liquidation simulation and warnings
+- [ ] Simple position entry/exit (no complex order types)
+- [ ] Performance tracking with perpetual-specific metrics
 **Status**: Pending
 
-#### TRADE-002: **2025-06-25** Market Data Integration
-**Description**: Real-time cryptocurrency market data for trading simulation
+#### TRADE-002: **2025-06-29** Perpetual Market Data Integration
+**Description**: Real-time perpetual contract market data with funding rates and mark pricing
 **Priority**: High | **Effort**: Medium | **Dependencies**: TRADE-001
 **Acceptance Criteria**:
-- [ ] CoinGecko API integration for price data
-- [ ] Real-time price updates (WebSocket connections)
-- [ ] Historical data for backtesting and education
-- [ ] Market volatility indicators
-- [ ] Trading volume and market cap data
-- [ ] Price alerts and notification system
+- [ ] Real-time perpetual contract prices (WebSocket connections)
+- [ ] Funding rate data feeds and calculations
+- [ ] Mark price computation (index price + funding rate impact)
+- [ ] Index price tracking from multiple exchanges
+- [ ] Funding rate history and predictions
+- [ ] Liquidation price calculations for positions
 - [ ] Circuit breaker patterns for API failures
-- [ ] Data caching and optimization
-- [ ] Rate limiting compliance
-- [ ] Alternative data source failover (Alpha Vantage)
+- [ ] Data caching and optimization for real-time feeds
+- [ ] Rate limiting compliance with data providers
+- [ ] Alternative data source failover for reliability
 **Status**: Pending
 
-#### TRADE-003: **2025-06-25** Trading Interface UI
-**Description**: User interface for paper trading with programmatic charts and visuals
+#### TRADE-003: **2025-06-29** Simple Perpetual Trading UI
+**Description**: Ultra-simple swipe-based perpetual trading interface (no complex charts)
 **Priority**: High | **Effort**: Large | **Dependencies**: UI-001, TRADE-001
 **Acceptance Criteria**:
-- [ ] Trading Post interface with market stall design using cards and buttons
-- [ ] Portfolio overview with pie charts and bar graphs using fl_chart package
-- [ ] Order book with animated list updates and color-coded price levels
-- [ ] Price charts using candlestick and line chart widgets with zoom/pan
-- [ ] Risk management tools with visual risk meters and sliders
-- [ ] Educational tooltips with animated popups and contextual information
-- [ ] Confirmation dialogs with warning colors and clear visual hierarchy
-- [ ] Performance analytics with generated graphs and trend indicators
-- [ ] Trading psychology tips with animated character or mascot suggestions
-- [ ] Mobile-first responsive design with gesture-friendly controls
+- [ ] Main trading screen with large price display and 24h change
+- [ ] Swipe gesture interface: swipe up for long, swipe down for short
+- [ ] Simple position entry: amount slider + leverage selector (2x, 5x, 10x, 20x)
+- [ ] Position management cards showing open positions with P&L
+- [ ] Simple close position buttons with confirmation
+- [ ] Liquidation warning indicators with visual risk levels
+- [ ] Paper trading mode toggle prominently displayed
+- [ ] Kingdom-themed position cards styled as "Battle Reports"
+- [ ] Basic trend indicator (no complex charts)
+- [ ] Mobile-first design optimized for quick position entry
+**Status**: Pending
+
+#### PERP-EDU-001: **2025-06-29** Perpetual Education Integration
+**Description**: Add perpetual trading education modules to Tier 1 curriculum
+**Priority**: High | **Effort**: Medium | **Dependencies**: EDU-001, EDU-002
+**Acceptance Criteria**:
+- [ ] PERP-BASICS module: "Kingdom Trading Fundamentals" with 4 lessons
+- [ ] PERP-RISK module: "Defending Your Kingdom" with 4 lessons
+- [ ] Interactive perpetual simulators for long/short practice
+- [ ] Kingdom metaphors for leverage, funding rates, and liquidation
+- [ ] Simple risk education focused on position sizing
+- [ ] Integration with existing Tier 1 education flow
+- [ ] Visual widgets for perpetual concepts using kingdom themes
+- [ ] Quiz systems for perpetual understanding verification
+**Status**: Pending
+
+#### PERP-SAFETY-001: **2025-06-29** Basic Risk Management System
+**Description**: Essential risk management features for perpetual trading safety
+**Priority**: High | **Effort**: Medium | **Dependencies**: TRADE-001, TRADE-002
+**Acceptance Criteria**:
+- [ ] Position size limits based on user tier (Village: 2x max, Town: 5x max)
+- [ ] Automatic liquidation warnings at 80%, 90%, 95% of liquidation price
+- [ ] Daily loss limits with trading suspension
+- [ ] Forced stop-losses for beginner users (first 30 days)
+- [ ] Emergency position closure system
+- [ ] Real-time margin monitoring and alerts
+- [ ] Educational popups for high-risk actions
+- [ ] Kingdom-themed risk visualization (territory under threat)
 **Status**: Pending
 
 ### 1.6 SOCIAL FEATURES FOUNDATION
@@ -339,25 +367,25 @@
 
 ---
 
-## PHASE 2: REAL TRADING (Months 4-6)
-*Real money integration, risk management, advanced education*
+## PHASE 2: REAL PERPETUAL TRADING (Months 4-6)
+*Real money perpetual contracts, advanced risk management, graduated leverage*
 
-### 2.1 REAL MONEY TRADING INTEGRATION
+### 2.1 REAL PERPETUAL TRADING INTEGRATION
 
-#### TRADE-004: **2025-06-25** Extended API Integration
-**Description**: Connect to Extended perpetuals trading platform
-**Priority**: High | **Effort**: Large | **Dependencies**: TRADE-001, INFRA-005
+#### TRADE-004: **2025-06-29** Real Perpetual Trading Integration
+**Description**: Connect to perpetual trading APIs for real money perpetual contracts
+**Priority**: High | **Effort**: Large | **Dependencies**: TRADE-001, TRADE-002, TRADE-003, INFRA-005
 **Acceptance Criteria**:
-- [ ] Extended API authentication integration
+- [ ] Perpetual trading API authentication (Extended/Binance/OKX)
 - [ ] Real account creation and KYC workflow
-- [ ] Order management system for real trades
-- [ ] Position tracking and management
-- [ ] Real-time balance and margin monitoring
-- [ ] Webhook integration for order status updates
-- [ ] Error handling and failover mechanisms
-- [ ] API rate limiting compliance
-- [ ] Audit logging for all real trades
-- [ ] Compliance reporting framework
+- [ ] Real perpetual position management system
+- [ ] Live margin and liquidation monitoring
+- [ ] Real funding rate payments and tracking
+- [ ] Webhook integration for position updates
+- [ ] Advanced risk management for real money
+- [ ] Compliance and audit logging for perpetual trades
+- [ ] Emergency liquidation prevention systems
+- [ ] Graduated leverage unlocks based on user tier progression
 **Status**: Pending
 
 #### TRADE-005: **2025-06-25** Graduated Position Sizing
