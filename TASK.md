@@ -767,35 +767,6 @@ Each task must meet these requirements before being marked complete:
 
 ## Discovered During Work
 
-### Development Environment Setup (Discovered 2025-06-25)
-**SETUP-001: Flutter SDK Installation**
-- **Description**: Install Flutter SDK 3.16+ to enable app development and testing
-- **Priority**: High | **Status**: Pending
-- **Acceptance Criteria**:
-  - [ ] Download Flutter SDK 3.16+ from flutter.dev
-  - [ ] Extract and add Flutter to system PATH
-  - [ ] Verify installation with `flutter --version`
-  - [ ] Run `flutter doctor` and resolve any issues
-  - [ ] Install IDE extensions (VS Code Flutter/Dart or Android Studio Flutter plugin)
-
-**SETUP-002: Project Dependencies and Code Generation**
-- **Description**: Install project dependencies and generate required Riverpod code
-- **Priority**: High | **Status**: Pending | **Dependencies**: SETUP-001
-- **Acceptance Criteria**:
-  - [ ] Navigate to mobile directory
-  - [ ] Run `flutter pub get` to install dependencies
-  - [ ] Run `dart run build_runner build --delete-conflicting-outputs` for code generation
-  - [ ] Verify no build errors
-
-**SETUP-003: First App Launch**
-- **Description**: Launch the Financial Kingdom Builder app for testing
-- **Priority**: High | **Status**: Pending | **Dependencies**: SETUP-002
-- **Acceptance Criteria**:
-  - [ ] Run `flutter run` command
-  - [ ] App launches successfully in simulator/device
-  - [ ] Verify navigation between all screens works
-  - [ ] Test basic UI interactions (taps, navigation)
-  - [ ] Confirm kingdom-themed UI displays correctly
 
 ### Integration Gaps (Discovered 2025-06-28)
 *Features that are implemented but not properly connected or accessible*
