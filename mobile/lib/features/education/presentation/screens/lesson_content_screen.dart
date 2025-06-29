@@ -7,6 +7,8 @@ import '../../widgets/interactive_budget_planner.dart';
 import '../../widgets/interactive_portfolio_builder.dart';
 import '../../widgets/portfolio_pie_chart.dart';
 import '../../widgets/education_quiz_widget.dart';
+import '../../widgets/reading_progress_widget.dart';
+import '../../widgets/bookmark_widget.dart';
 
 class LessonContentScreen extends ConsumerStatefulWidget {
   final LessonContent lesson;
@@ -20,21 +22,105 @@ class LessonContentScreen extends ConsumerStatefulWidget {
   ConsumerState<LessonContentScreen> createState() => _LessonContentScreenState();
 }
 
-class _LessonContentScreenState extends ConsumerState<LessonContentScreen> {
+class _LessonContentScreenState extends ConsumerState<LessonContentScreen>
+    with TickerProviderStateMixin {
   bool _isCompleted = false;
   int _quizScore = 0;
   int _quizTotal = 0;
+  bool _isBookmarked = false;
+  double _readingProgress = 0.0;
+  late ScrollController _scrollController;
+  late AnimationController _contentAnimationController;
+  late AnimationController _progressAnimationController;
+  late Animation<double> _fadeInAnimation;
+  late Animation<Offset> _slideInAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    
+    _contentAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    
+    _progressAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _fadeInAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _contentAnimationController,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideInAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _contentAnimationController,
+      curve: Curves.easeOutBack,
+    ));
+
+    _scrollController.addListener(_updateReadingProgress);
+    
+    // Start content animation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _contentAnimationController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _contentAnimationController.dispose();
+    _progressAnimationController.dispose();
+    super.dispose();
+  }
+
+  void _updateReadingProgress() {
+    if (_scrollController.hasClients) {
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.offset;
+      final progress = maxScroll > 0 ? (currentScroll / maxScroll).clamp(0.0, 1.0) : 0.0;
+      
+      if (progress != _readingProgress) {
+        setState(() {
+          _readingProgress = progress;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.lesson.title,
-          style: DuolingoTheme.bodyLarge.copyWith(
-            fontWeight: FontWeight.w700,
-            color: DuolingoTheme.white,
-          ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                widget.lesson.title,
+                style: DuolingoTheme.bodyLarge.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: DuolingoTheme.white,
+                ),
+              ),
+            ),
+            // Bookmark button
+            BookmarkWidget(
+              isBookmarked: _isBookmarked,
+              onBookmarkToggled: (bookmarked) {
+                setState(() {
+                  _isBookmarked = bookmarked;
+                });
+              },
+            ),
+          ],
         ),
         backgroundColor: DuolingoTheme.duoGreen,
         elevation: 0,
@@ -68,32 +154,87 @@ class _LessonContentScreenState extends ConsumerState<LessonContentScreen> {
               ),
             ),
         ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Lesson header
-            _buildLessonHeader(),
-            
-            const SizedBox(height: DuolingoTheme.spacingLg),
-            
-            // Lesson content based on type
-            _buildLessonContent(),
-            
-            const SizedBox(height: DuolingoTheme.spacingLg),
-            
-            // Completion button (for non-quiz lessons)
-            if (widget.lesson.type != LessonType.quiz && !_isCompleted)
-              _buildCompletionButton(),
-            
-            if (_isCompleted) ...[
-              const SizedBox(height: DuolingoTheme.spacingMd),
-              _buildCompletionMessage(),
-            ],
-          ],
+        // Reading progress indicator
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: ReadingProgressWidget(
+            progress: _readingProgress,
+          ),
         ),
+      ),
+      body: AnimatedBuilder(
+        animation: _fadeInAnimation,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _fadeInAnimation.value,
+            child: SlideTransition(
+              position: _slideInAnimation,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Lesson header with animation delay
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 600),
+                      tween: Tween<double>(begin: 0, end: 1),
+                      builder: (context, value, child) {
+                        return Transform.translate(
+                          offset: Offset(0, 20 * (1 - value)),
+                          child: Opacity(
+                            opacity: value,
+                            child: _buildLessonHeader(),
+                          ),
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: DuolingoTheme.spacingLg),
+                    
+                    // Lesson content with animation delay
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 800),
+                      tween: Tween<double>(begin: 0, end: 1),
+                      builder: (context, value, child) {
+                        return Transform.translate(
+                          offset: Offset(0, 30 * (1 - value)),
+                          child: Opacity(
+                            opacity: value,
+                            child: _buildLessonContent(),
+                          ),
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: DuolingoTheme.spacingLg),
+                    
+                    // Completion button (for non-quiz lessons) with animation delay
+                    if (widget.lesson.type != LessonType.quiz && !_isCompleted)
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 1000),
+                        tween: Tween<double>(begin: 0, end: 1),
+                        builder: (context, value, child) {
+                          return Transform.translate(
+                            offset: Offset(0, 20 * (1 - value)),
+                            child: Opacity(
+                              opacity: value,
+                              child: _buildCompletionButton(),
+                            ),
+                          );
+                        },
+                      ),
+                    
+                    if (_isCompleted) ...[
+                      const SizedBox(height: DuolingoTheme.spacingMd),
+                      _buildCompletionMessage(),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
