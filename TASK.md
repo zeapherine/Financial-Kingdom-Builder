@@ -281,13 +281,13 @@
 - [x] Funding rate data feeds and calculations
 - [x] Mark price computation (index price + funding rate impact)
 - [x] Index price tracking from multiple exchanges (demo data)
-- [ ] Funding rate history and predictions
+- [x] Funding rate history and predictions
 - [x] Liquidation price calculations for positions
-- [ ] Circuit breaker patterns for API failures
-- [ ] Data caching and optimization for real-time feeds
-- [ ] Rate limiting compliance with data providers
-- [ ] Alternative data source failover for reliability
-**Status**: Partially Completed (Demo Implementation)
+- [x] Circuit breaker patterns for API failures
+- [x] Data caching and optimization for real-time feeds
+- [x] Rate limiting compliance with data providers
+- [x] Alternative data source failover for reliability
+**Status**: Completed
 
 #### TRADE-003: **2025-06-29** Simple Perpetual Trading UI
 **Description**: Ultra-simple swipe-based perpetual trading interface (no complex charts)
@@ -315,23 +315,23 @@
 - [x] Kingdom metaphors for leverage, funding rates, and liquidation
 - [x] Simple risk education focused on position sizing
 - [x] Integration with existing Tier 1 education flow
-- [ ] Visual widgets for perpetual concepts using kingdom themes
-- [ ] Quiz systems for perpetual understanding verification
-**Status**: Partially Completed (Core modules integrated)
+- [x] Visual widgets for perpetual concepts using kingdom themes
+- [x] Quiz systems for perpetual understanding verification
+**Status**: Completed
 
 #### PERP-SAFETY-001: **2025-06-29** Basic Risk Management System
 **Description**: Essential risk management features for perpetual trading safety
 **Priority**: High | **Effort**: Medium | **Dependencies**: TRADE-001, TRADE-002
 **Acceptance Criteria**:
-- [ ] Position size limits based on user tier (Village: 2x max, Town: 5x max)
+- [x] Position size limits based on user tier (Village: 2x max, Town: 5x max)
 - [x] Automatic liquidation warnings at 80%, 90%, 95% of liquidation price
-- [ ] Daily loss limits with trading suspension
-- [ ] Forced stop-losses for beginner users (first 30 days)
+- [x] Daily loss limits with trading suspension
+- [x] Forced stop-losses for beginner users (first 30 days)
 - [x] Emergency position closure system
 - [x] Real-time margin monitoring and alerts
 - [x] Educational popups for high-risk actions
 - [x] Kingdom-themed risk visualization (territory under threat)
-**Status**: Partially Completed (Core safety features implemented)
+**Status**: Completed
 
 ### 1.6 SOCIAL FEATURES FOUNDATION
 
