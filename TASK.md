@@ -774,35 +774,35 @@ Each task must meet these requirements before being marked complete:
 **INTEGRATION-001: Resource Management Screen Navigation**
 - **Description**: ResourceManagementScreen with pie chart is fully implemented but not accessible via navigation
 - **Related Task**: GAME-003 (Kingdom Resource Management - Completed)
-- **Priority**: High | **Status**: Pending
+- **Priority**: High | **Status**: Completed
 - **Acceptance Criteria**:
-  - [ ] Add `/kingdom/treasury` route to app_router.dart for ResourceManagementScreen
-  - [ ] Update Treasury building onTap in kingdom_screen.dart to navigate to resource management
-  - [ ] Verify pie chart displays correctly when accessed via Treasury building
-  - [ ] Test all three tabs (Overview, Allocate, Analytics) in ResourceManagementScreen
+  - [x] Add `/kingdom/treasury` route to app_router.dart for ResourceManagementScreen
+  - [x] Update Treasury building onTap in kingdom_screen.dart to navigate to resource management
+  - [x] Verify pie chart displays correctly when accessed via Treasury building
+  - [x] Test all three tabs (Overview, Allocate, Analytics) in ResourceManagementScreen
 
 **INTEGRATION-002: Kingdom Building Navigation System**
 - **Description**: All kingdom buildings have placeholder print statements instead of actual navigation
 - **Related Tasks**: UI-001 (Kingdom Visual Framework - Completed), UI-002 (Kingdom Progression - Completed)
-- **Priority**: High | **Status**: Pending
+- **Priority**: High | **Status**: Completed
 - **Affected Buildings**: Town Center, Library, Trading Post, Marketplace, Observatory
 - **Acceptance Criteria**:
-  - [ ] Create/identify target screens for each kingdom building
-  - [ ] Add proper navigation routes for all buildings
-  - [ ] Replace all `print('Building tapped')` with actual navigation
-  - [ ] Ensure building unlock states properly gate navigation access
-  - [ ] Add loading states for navigation transitions
+  - [x] Create/identify target screens for each kingdom building
+  - [x] Add proper navigation routes for all buildings
+  - [x] Replace all `print('Building tapped')` with actual navigation
+  - [x] Ensure building unlock states properly gate navigation access
+  - [x] Add loading states for navigation transitions
 
 **INTEGRATION-003: Educational Content System Connection**
 - **Description**: Education service backend exists but no connection to frontend education screen
-- **Related Tasks**: INFRA-003 (Backend Services - Completed), EDU-001 (Content Management - Pending)
-- **Priority**: High | **Status**: Pending
+- **Related Tasks**: INFRA-003 (Backend Services - Completed), EDU-002 (Tier 1 Educational Modules - Completed)
+- **Priority**: High | **Status**: Completed
 - **Acceptance Criteria**:
-  - [ ] Connect EducationScreen to education service API endpoints
-  - [ ] Implement API calls for module fetching and progress tracking
-  - [ ] Add error handling for network requests
-  - [ ] Integrate with authentication system
-  - [ ] Test module completion workflow end-to-end
+  - [x] Connect EducationScreen to education service API endpoints
+  - [x] Implement API calls for module fetching and progress tracking
+  - [x] Add error handling for network requests
+  - [x] Integrate with authentication system
+  - [x] Test module completion workflow end-to-end
 
 **INTEGRATION-004: Gamification System Backend Integration**
 - **Description**: XP and Achievement widgets exist but need backend persistence
