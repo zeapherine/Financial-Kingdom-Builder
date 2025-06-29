@@ -12,11 +12,37 @@ import { portfolioRouter } from './routes/portfolio';
 import { ordersRouter } from './routes/orders';
 import { marketDataRouter } from './routes/market-data';
 import { AppError } from './utils/app-error';
+import { PerpetualMarketDataService } from './services/perpetual-market-data.service';
+import { PerpetualPortfolioService } from './services/perpetual-portfolio.service';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize services
+const marketDataService = new PerpetualMarketDataService();
+const portfolioService = new PerpetualPortfolioService();
+
+// Connect market data updates to portfolio service
+marketDataService.on('priceUpdate', async (data) => {
+  try {
+    await portfolioService.updatePositionPrices(data.symbol, data.markPrice);
+    logger.debug(`Updated positions for ${data.symbol} at price ${data.markPrice}`);
+  } catch (error) {
+    logger.error('Failed to update position prices:', error);
+  }
+});
+
+// Connect funding rate updates to portfolio service
+marketDataService.on('fundingUpdate', async (data) => {
+  try {
+    await portfolioService.applyFundingPayments(data.symbol, data.rate);
+    logger.info(`Applied funding payments for ${data.symbol} at rate ${data.rate}`);
+  } catch (error) {
+    logger.error('Failed to apply funding payments:', error);
+  }
+});
 
 app.use(helmet());
 app.use(cors());
@@ -38,10 +64,23 @@ app.use('/market-data', marketDataRouter);
 
 app.get('/', (req, res) => {
   res.json({
-    service: 'Trading Service',
+    service: 'Perpetual Trading Service',
     version: '1.0.0',
     status: 'healthy',
     timestamp: new Date().toISOString(),
+    features: [
+      'Paper trading with perpetual contracts',
+      'Real-time market data simulation',
+      'Funding rate calculations',
+      'Risk management and liquidation',
+      'Extended Exchange integration ready'
+    ],
+    endpoints: {
+      portfolio: '/portfolio',
+      orders: '/orders',
+      marketData: '/market-data',
+      health: '/health'
+    }
   });
 });
 
@@ -52,13 +91,22 @@ app.use('*', (req, res, next) => {
 app.use(errorHandler);
 
 const server = app.listen(PORT, () => {
-  logger.info(`Trading Service running on port ${PORT}`);
+  logger.info(`Perpetual Trading Service running on port ${PORT}`);
+  logger.info('Services initialized:');
+  logger.info('- Paper trading engine ready');
+  logger.info('- Market data simulation active');
+  logger.info('- Funding rate calculations enabled');
+  logger.info('- Extended Exchange integration prepared');
 });
 
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received, shutting down gracefully');
+  
+  // Cleanup services
+  marketDataService.cleanup();
+  
   server.close(() => {
-    logger.info('Process terminated');
+    logger.info('Perpetual Trading Service terminated');
   });
 });
 

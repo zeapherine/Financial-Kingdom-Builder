@@ -38,7 +38,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen>
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final educationState = ref.watch(educationProvider);
     
     return Scaffold(
