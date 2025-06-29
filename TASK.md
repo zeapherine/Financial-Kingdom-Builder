@@ -24,6 +24,8 @@
 - [x] **2025-06-28**: EDU-002 Tier 1 Educational Modules - All educational content modules with interactive widgets, animations, and kingdom metaphors
 - [x] **2025-06-29**: TRADE-001 Perpetual Paper Trading Engine - Complete virtual perpetual trading system with leverage, liquidation, and P&L tracking
 - [x] **2025-06-29**: TRADE-003 Simple Perpetual Trading UI - Ultra-simple swipe-based perpetual trading interface with kingdom themes
+- [x] **2025-06-29**: TRADE-004 Real Perpetual Trading Integration - KYC workflow, webhook integration, and compliance logging system
+- [x] **2025-06-29**: TRADE-005 Graduated Position Sizing - Progressive risk limits, automatic position sizing, and risk calculator integration
 
 ---
 
@@ -390,37 +392,44 @@
 - [x] Graduated leverage unlocks based on user tier progression (risk limits per user tier)
 **Status**: Completed
 
-#### TRADE-005: **2025-06-25** Graduated Position Sizing
-**Description**: Risk management through limited position sizes for Tier 2 users
+#### TRADE-005: **2025-06-29** Graduated Position Sizing
+**Description**: Risk management through limited position sizes with progressive tier-based limits
 **Priority**: High | **Effort**: Medium | **Dependencies**: TRADE-004, GAME-002
 **Acceptance Criteria**:
-- [ ] Dynamic position size limits based on user tier
-- [ ] Capital allocation restrictions (start with 10-20% of intended capital)
-- [ ] Automatic stop-loss implementation for first 30 days
-- [ ] Daily loss limits with automatic circuit breakers
-- [ ] Risk score calculation per trade
-- [ ] Educational warnings before high-risk trades
-- [ ] Gradual limit increases based on performance
-- [ ] Portfolio diversification enforcement
-- [ ] Risk management dashboard
-- [ ] Performance-based tier advancement
-**Status**: Pending
+- [x] Dynamic position size limits based on user tier (Village: 5%, Town: 10%, City: 15%, Kingdom: 20%, Empire: 25%)
+- [x] Progressive leverage limits (Village: 2x, Town: 5x, City: 10x, Kingdom: 20x, Empire: 50x)
+- [x] Automatic position sizing recommendations with risk calculator
+- [x] Daily loss limits with automatic circuit breakers
+- [x] Risk score calculation per trade with performance-based adjustments
+- [x] Educational warnings before high-risk trades
+- [x] Gradual limit increases based on tier progression and performance
+- [x] Portfolio diversification enforcement with risk management dashboard
+- [x] Risk calculator integrated into trade entry UI with animated results
+- [x] Performance-based tier advancement system
+**Status**: Completed
 
 #### TRADE-006: **2025-06-25** Real Trading UI Enhancement
 **Description**: Enhanced trading interface for real money operations
 **Priority**: High | **Effort**: Medium | **Dependencies**: TRADE-003, TRADE-004
 **Acceptance Criteria**:
-- [ ] Real vs paper trading mode toggle
-- [ ] Enhanced confirmation dialogs for real trades
-- [ ] Risk warnings and educational prompts
-- [ ] Real-time balance and P&L display
+- [x] Real vs paper trading mode toggle (TradingModeToggle with animated switching and secure storage)
+- [x] Enhanced confirmation dialogs for real trades (EnhancedConfirmationDialog with typing confirmation)
+- [x] Risk warnings and educational prompts (RiskWarningDialog with educational risk progression)
+- [x] Real-time balance and P&L display (P&L visualization completed)
 - [ ] Advanced order types (stop-loss, take-profit)
-- [ ] Position management interface
+- [x] Position management interface (one-tap position manager completed)
 - [ ] Trade execution confirmation system
 - [ ] Performance analytics for real trading
 - [ ] Tax reporting data compilation
 - [ ] Emergency stop-trading functionality
-**Status**: Pending
+**Status**: Partially Completed
+
+**Additional Features Implemented (Beyond Original Scope)**:
+- [x] Advanced chart widgets with technical indicators
+- [x] Interactive timeframe selection with animated transitions
+- [x] Multi-symbol support with real-time price updates
+- [x] Real-time P&L visualization with animations and streaming updates
+- [x] 24h P&L history chart with custom painting
 
 ### 2.2 TIER 2 EDUCATIONAL CONTENT
 

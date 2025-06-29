@@ -15,6 +15,7 @@ class KycScreen extends ConsumerStatefulWidget {
   ConsumerState<KycScreen> createState() => _KycScreenState();
 }
 
+
 class _KycScreenState extends ConsumerState<KycScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   final _formKey = GlobalKey<FormState>();

@@ -16,6 +16,7 @@ import { stopLossRouter } from './routes/stop-loss';
 import { kycRouter } from './routes/kyc';
 import { webhooksRouter } from './routes/webhooks';
 import { complianceRouter } from './routes/compliance';
+import { positionSizingRouter } from './routes/position-sizing';
 import { AppError } from './utils/app-error';
 import { PerpetualMarketDataService } from './services/perpetual-market-data.service';
 import { PerpetualPortfolioService } from './services/perpetual-portfolio.service';
@@ -71,6 +72,7 @@ app.use('/stop-loss', validateAuth, stopLossRouter);
 app.use('/kyc', validateAuth, kycRouter);
 app.use('/webhooks', webhooksRouter);
 app.use('/compliance', validateAuth, complianceRouter);
+app.use('/position-sizing', validateAuth, positionSizingRouter);
 
 app.get('/', (req, res) => {
   res.json({
@@ -86,7 +88,8 @@ app.get('/', (req, res) => {
       'Extended Exchange integration ready',
       'KYC verification system',
       'Webhook integration for real-time updates',
-      'Compliance and audit logging'
+      'Compliance and audit logging',
+      'Graduated position sizing with tier-based limits'
     ],
     endpoints: {
       portfolio: '/portfolio',
@@ -97,6 +100,7 @@ app.get('/', (req, res) => {
       kyc: '/kyc',
       webhooks: '/webhooks',
       compliance: '/compliance',
+      positionSizing: '/position-sizing',
       health: '/health'
     }
   });
