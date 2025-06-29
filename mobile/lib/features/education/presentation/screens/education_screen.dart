@@ -566,6 +566,8 @@ class _EducationModule extends StatelessWidget {
     switch (category) {
       case 'Financial Literacy':
         return Icons.account_balance_wallet;
+      case 'Perpetual Trading':
+        return Icons.swap_horiz;
       case 'Cryptocurrency':
         return Icons.currency_bitcoin;
       case 'Risk Management':
@@ -585,6 +587,8 @@ class _EducationModule extends StatelessWidget {
     switch (category) {
       case 'Financial Literacy':
         return 50;
+      case 'Perpetual Trading':
+        return 85;
       case 'Cryptocurrency':
         return 60;
       case 'Risk Management':

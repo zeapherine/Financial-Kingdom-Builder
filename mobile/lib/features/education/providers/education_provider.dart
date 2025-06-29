@@ -6,6 +6,8 @@ import '../data/cryptocurrency_modules.dart';
 import '../data/risk_management_modules.dart';
 import '../data/trading_terminology_modules.dart';
 import '../data/building_permit_modules.dart';
+import '../data/perpetual_basics_modules.dart';
+import '../data/perpetual_risk_modules.dart';
 import '../services/education_service.dart';
 
 class EducationModule {
@@ -106,6 +108,20 @@ class EducationNotifier extends StateNotifier<EducationState> {
         isLocked: false,
       ),
       const EducationModule(
+        id: 'perpetual-basics',
+        title: 'Perpetual Trading Foundations',
+        description: 'Learn the basics of perpetual contracts and territory expansion trading',
+        category: 'Perpetual Trading',
+        isLocked: false,
+      ),
+      const EducationModule(
+        id: 'perpetual-risk',
+        title: 'Perpetual Risk Management',
+        description: 'Master leverage, liquidation, and risk control for perpetual trading',
+        category: 'Perpetual Trading',
+        isLocked: false,
+      ),
+      const EducationModule(
         id: 'cryptocurrency-basics',
         title: 'Cryptocurrency Basics',
         description: 'Understand digital currencies and blockchain technology',
@@ -148,6 +164,8 @@ class EducationNotifier extends StateNotifier<EducationState> {
   static Map<String, List<LessonContent>> _getInitialModuleContent() {
     return {
       'financial-literacy': FinancialLiteracyModules.getFinancialLiteracyLessons(),
+      'perpetual-basics': PerpetualBasicsModules.getPerpetualBasicsLessons(),
+      'perpetual-risk': PerpetualRiskModules.getPerpetualRiskLessons(),
       'cryptocurrency-basics': CryptocurrencyModules.modules,
       'risk-management': RiskManagementModules.modules,
       'trading-terminology': TradingTerminologyModules.modules,
@@ -282,6 +300,10 @@ class EducationNotifier extends StateNotifier<EducationState> {
     switch (moduleId) {
       case 'financial-literacy':
         return 100;
+      case 'perpetual-basics':
+        return 125;
+      case 'perpetual-risk':
+        return 150;
       case 'cryptocurrency-basics':
         return 120;
       case 'risk-management':
