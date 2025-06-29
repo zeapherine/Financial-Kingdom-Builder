@@ -19,7 +19,18 @@ class EducationScreen extends ConsumerWidget {
         title: const Text('Financial Education'),
       ),
       drawer: const AppDrawer(),
-      body: SingleChildScrollView(
+      body: educationState.isLoading
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: DuolingoTheme.spacingMd),
+                  Text('Loading your educational progress...'),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,6 +88,37 @@ class EducationScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: DuolingoTheme.spacingLg),
+            
+            // Error message if present
+            if (educationState.error != null) ...[
+              Container(
+                padding: const EdgeInsets.all(DuolingoTheme.spacingMd),
+                decoration: BoxDecoration(
+                  color: DuolingoTheme.duoRed.withValues(alpha: 0.1),
+                  border: Border.all(color: DuolingoTheme.duoRed.withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(DuolingoTheme.radiusMedium),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.warning,
+                      color: DuolingoTheme.duoRed,
+                      size: DuolingoTheme.iconMedium,
+                    ),
+                    const SizedBox(width: DuolingoTheme.spacingMd),
+                    Expanded(
+                      child: Text(
+                        educationState.error!,
+                        style: DuolingoTheme.bodySmall.copyWith(
+                          color: DuolingoTheme.duoRed,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: DuolingoTheme.spacingMd),
+            ],
             
             // Modules List
             ...educationState.modules.map((module) => _EducationModule(
@@ -218,10 +260,14 @@ class _EducationModule extends StatelessWidget {
     switch (category) {
       case 'Financial Literacy':
         return Icons.account_balance_wallet;
+      case 'Cryptocurrency':
+        return Icons.currency_bitcoin;
       case 'Risk Management':
-        return Icons.trending_up;
+        return Icons.security;
       case 'Trading':
-        return Icons.candlestick_chart;
+        return Icons.trending_up;
+      case 'Compliance':
+        return Icons.gavel;
       case 'Portfolio Management':
         return Icons.pie_chart;
       default:
@@ -233,10 +279,14 @@ class _EducationModule extends StatelessWidget {
     switch (category) {
       case 'Financial Literacy':
         return 50;
+      case 'Cryptocurrency':
+        return 60;
       case 'Risk Management':
         return 75;
       case 'Trading':
         return 100;
+      case 'Compliance':
+        return 80;
       case 'Portfolio Management':
         return 125;
       default:

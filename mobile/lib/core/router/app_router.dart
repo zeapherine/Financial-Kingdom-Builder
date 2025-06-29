@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/kingdom/presentation/screens/kingdom_screen.dart';
+import '../../features/kingdom/presentation/screens/resource_management_screen.dart';
+import '../../features/kingdom/presentation/screens/town_center_screen.dart';
+import '../../features/kingdom/presentation/screens/marketplace_screen.dart';
+import '../../features/kingdom/presentation/screens/observatory_screen.dart';
 import '../../features/education/presentation/screens/education_screen.dart';
 import '../../features/trading/presentation/screens/trading_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
@@ -68,6 +72,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      
+      // Kingdom building routes
+      GoRoute(
+        path: '/kingdom/treasury',
+        name: 'treasury',
+        builder: (context, state) => const ResourceManagementScreen(),
+      ),
+      GoRoute(
+        path: '/kingdom/town-center',
+        name: 'town-center', 
+        builder: (context, state) => const TownCenterScreen(),
+      ),
+      GoRoute(
+        path: '/kingdom/marketplace',
+        name: 'marketplace',
+        builder: (context, state) => const MarketplaceScreen(),
+      ),
+      GoRoute(
+        path: '/kingdom/observatory',
+        name: 'observatory',
+        builder: (context, state) => const ObservatoryScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

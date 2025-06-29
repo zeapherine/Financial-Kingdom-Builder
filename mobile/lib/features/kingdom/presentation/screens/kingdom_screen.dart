@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/config/duolingo_theme.dart';
 import '../../../../shared/widgets/gamification_widgets.dart';
 import '../../../../shared/widgets/app_drawer.dart';
@@ -161,8 +162,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 GestureDetector(
                   onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.townCenter) 
                       ? () {
-                          // TODO: Navigate to Town Center screen
-                          print('Town Center tapped');
+                          context.go('/kingdom/town-center');
                         }
                       : null,
                   child: _buildKingdomBuilding(
@@ -178,8 +178,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                   child: GestureDetector(
                     onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.library) 
                         ? () {
-                            // TODO: Navigate to Library screen
-                            print('Library tapped');
+                            context.go('/education');
                           }
                         : null,
                     child: _buildKingdomBuilding(
@@ -194,8 +193,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 GestureDetector(
                   onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.tradingPost) 
                       ? () {
-                          // TODO: Navigate to Trading Post screen
-                          print('Trading Post tapped');
+                          context.go('/trading');
                         }
                       : null,
                   child: _buildKingdomBuilding(
@@ -209,8 +207,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 GestureDetector(
                   onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.treasury) 
                       ? () {
-                          // TODO: Navigate to Treasury screen
-                          print('Treasury tapped');
+                          context.go('/kingdom/treasury');
                         }
                       : null,
                   child: _buildKingdomBuilding(
@@ -224,8 +221,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 GestureDetector(
                   onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.marketplace) 
                       ? () {
-                          // TODO: Navigate to Marketplace screen
-                          print('Marketplace tapped');
+                          context.go('/kingdom/marketplace');
                         }
                       : null,
                   child: _buildKingdomBuilding(
@@ -239,8 +235,7 @@ class _KingdomScreenState extends ConsumerState<KingdomScreen> {
                 GestureDetector(
                   onTap: kingdomState.isBuildingUnlocked(KingdomBuilding.observatory) 
                       ? () {
-                          // TODO: Navigate to Observatory screen
-                          print('Observatory tapped');
+                          context.go('/kingdom/observatory');
                         }
                       : null,
                   child: _buildKingdomBuilding(
